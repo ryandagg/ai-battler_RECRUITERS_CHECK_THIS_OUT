@@ -33,7 +33,7 @@ var GameSpace = (function() {
 		 ROOM_MAX_DIMENSION: 9,
 		 MONSTER_PER_LEVEL: 30
 	};
-	console.log("STATE:", STATE)
+	// console.log("STATE:", STATE);
 
 	// if(STATE.type === 'aiPvp') {
 	// 	var MAP_COLUMNS = 20;
@@ -55,7 +55,7 @@ var GameSpace = (function() {
 			STATE.MONSTER_PER_LEVEL = 1;
 		}
 
-		console.log("STATE-func:", STATE)
+		// console.log("STATE-func:", STATE);
 	}
 	// utility functions for resizing tiles upon window load & resize
 	var resizeTiles = function() {
@@ -421,7 +421,7 @@ var GameSpace = (function() {
 				i++;
 			}
 		}
-		console.log(randomRoomsCountWhile);
+		// console.log("randomRoomsCountWhile: ", randomRoomsCountWhile);
 		// console.log("tempMap: ", tempMap);
 		// console.log(tempRoomList);
 		
@@ -572,7 +572,7 @@ var GameSpace = (function() {
 		var self = this;
 		var counter = 0;
 
-		console.log("this.columns):", this.columns);
+		// console.log("this.columns):", this.columns);
 		Handlebars.registerHelper("columnCounter", function() {
 			// counter++;
 			// console.log(counter);
@@ -828,9 +828,9 @@ var GameSpace = (function() {
 
 	Character.prototype.openInventorySlot = function() {
 		for(var i in this.inventory) {
-			console.log("this.inventory.i: ", this.inventory.i)
+			// console.log("this.inventory.i: ", this.inventory.i)
 			if(this.inventory[i] === null) {
-				console.log("i: ", i);
+				// console.log("i: ", i);
 				return i;
 			}
 		}
@@ -876,12 +876,12 @@ var GameSpace = (function() {
 			}
 			else {
 				var item = keyCheck[keyCode];
-				console.log(item);
+				// console.log(item);
 				if(this.inventory[item] !== null) {
 					addMessage("Do what with the " + this.inventory[item].toString() + "?");
 					addMessage("drop (d), equip (e), use (u), unequip (u)");
 					this.inventoryFocus = this.inventory[item];
-					console.log(this.inventoryFocus instanceof Equipment);
+					// console.log(this.inventoryFocus instanceof Equipment);
 				}
 				else {
 					addMessage("That is not an item");
@@ -1316,8 +1316,8 @@ var GameSpace = (function() {
 	// // create local 'globals'
 	var currentLevel = null;
 	// var currentLevel = new Level(STATE.MAP_COLUMNS, STATE.MAP_ROWS, 0);
-	var rogue = null;
-	// var rogue = new Character(1, 1);
+	// var rogue = null;
+	var rogue = new Character(1, 1);
 	var monstersActive = [];
 	var monstersAvailable = []
 	var totalTurns = 0;
@@ -1330,7 +1330,9 @@ var GameSpace = (function() {
 		console.log("initialize called");
 		// create local 'globals'
 		currentLevel = new Level(STATE.MAP_COLUMNS, STATE.MAP_ROWS, 0);
-		rogue = new Character(1, 1);
+		// console.log("currentLevel:", currentLevel)
+		// rogue = new Character(1, 1);
+		// console.log("rogue:", rogue)
 		// var monstersActive = [];
 		// var monstersAvailable = [];
 		// var totalTurns = 0;
@@ -1345,14 +1347,18 @@ var GameSpace = (function() {
 	}
 
 	return {
+		// only returning these for debugging, no need in actual game.
 		GameSpace: GameSpace,
-		initialize: initialize,
-		rogue: rogue,
+		STATE: STATE,
+
+		// actually must be returned for game to work.
 		clickText: clickText,
 		currentLevel: currentLevel,
 		resizeTiles: resizeTiles,
 		resizeFont: resizeFont,
 		updateState: updateState,
-		STATE: STATE
+		rogue: rogue,
+		initialize: initialize,
+
 	}
 })();
