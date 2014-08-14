@@ -24,39 +24,48 @@
 var GameSpace = (function() {
 // helper funcitons
 	// constant variables
-	var STATE = 'solo';
+	var STATE = {
+		type: 'solo',
+		 MAP_COLUMNS: 60,
+		 MAP_ROWS: 40,
+		 ROOMS_QUANTITY: 50,
+		 ROOM_MIN_DIMENSION: 4,
+		 ROOM_MAX_DIMENSION: 9,
+		 MONSTER_PER_LEVEL: 30
+	};
 	console.log("STATE:", STATE)
 
-	if(STATE === 'solo'){
-		var MAP_COLUMNS = 60;
-		var MAP_ROWS = 40;
-		var ROOMS_QUANTITY = 50;
-		var ROOM_MIN_DIMENSION = 4;
-		var ROOM_MAX_DIMENSION = 9;
-		var MONSTER_PER_LEVEL = 30;
-	}
-	else if(STATE === 'aiPvp') {
-		var MAP_COLUMNS = 20;
-		var MAP_ROWS = 20;
-		var ROOMS_QUANTITY = 0;
-		var ROOM_MIN_DIMENSION = 0;
-		var ROOM_MAX_DIMENSION = 0;
-		var MONSTER_PER_LEVEL = 0;
-	}
+	// if(STATE.type === 'aiPvp') {
+	// 	var MAP_COLUMNS = 20;
+	// 	var MAP_ROWS = 20;
+	// 	var ROOMS_QUANTITY = 0;
+	// 	var ROOM_MIN_DIMENSION = 0;
+	// 	var ROOM_MAX_DIMENSION = 0;
+	// 	var MONSTER_PER_LEVEL = 1;
+	// }
 
 	// function to updateState
 	var updateState = function(str){
-		STATE = str
+		if(str === 'aiPvp'){
+			STATE.MAP_COLUMNS = 20;
+			STATE.MAP_ROWS = 20;
+			STATE.ROOMS_QUANTITY = 0;
+			STATE.ROOM_MIN_DIMENSION = 0;
+			STATE.ROOM_MAX_DIMENSION = 0;
+			STATE.MONSTER_PER_LEVEL = 1;
+		}
+
+		console.log("STATE-func:", STATE)
 	}
 	// utility functions for resizing tiles upon window load & resize
 	var resizeTiles = function() {
 		// var winSize = Math.min($(window).width(), $(window).height()) * 0.85;
 		var winHeight = $(window).height() * 0.85
 		var winWidth = $(window).width() * 0.75
-		$(".tile").width(winWidth / GameSpace.currentLevel.columns);
-		$(".tile").height(winHeight / GameSpace.currentLevel.rows);
-
+		$(".tile").width(winWidth / currentLevel.columns);
+		$(".tile").height(winHeight / currentLevel.rows);
 	}
+
 	// always called with resizeTiles to change font size
 	var resizeFont = function() {
 		// Set font size to scale with square height
@@ -175,7 +184,7 @@ var GameSpace = (function() {
 	// Called whenever rogue uses stairs.
 	var createNewLevel = function(direction) {
 		// Create new level object.
-		currentLevel = new Level(MAP_COLUMNS, MAP_ROWS, currentLevel.depth + direction);
+		currentLevel = new Level(STATE.MAP_COLUMNS, STATE.MAP_ROWS, currentLevel.depth + direction);
 
 		// Player goes down.
 		if(direction > 0) {
@@ -396,10 +405,10 @@ var GameSpace = (function() {
 				console.log("randomRoomsWhile maxed out");
 				return this.randomRooms(quantity);
 			}
-			var centerX = Math.floor(Math.random()*(this.columns - ROOM_MAX_DIMENSION) + ROOM_MAX_DIMENSION/2) 
-			var centerY = Math.floor(Math.random()*(this.rows - ROOM_MAX_DIMENSION) + ROOM_MAX_DIMENSION/2)
-			var width = Math.floor(Math.random() * (ROOM_MAX_DIMENSION - ROOM_MIN_DIMENSION) + ROOM_MIN_DIMENSION)
-			var height = Math.floor(Math.random() * (ROOM_MAX_DIMENSION - ROOM_MIN_DIMENSION) + ROOM_MIN_DIMENSION)
+			var centerX = Math.floor(Math.random()*(this.columns - STATE.ROOM_MAX_DIMENSION) + STATE.ROOM_MAX_DIMENSION/2) 
+			var centerY = Math.floor(Math.random()*(this.rows - STATE.ROOM_MAX_DIMENSION) + STATE.ROOM_MAX_DIMENSION/2)
+			var width = Math.floor(Math.random() * (STATE.ROOM_MAX_DIMENSION - STATE.ROOM_MIN_DIMENSION) + STATE.ROOM_MIN_DIMENSION)
+			var height = Math.floor(Math.random() * (STATE.ROOM_MAX_DIMENSION - STATE.ROOM_MIN_DIMENSION) + STATE.ROOM_MIN_DIMENSION)
 
 			var tempRoom = new Room(centerX, centerY, width, height)
 			// this.createRoom(tempRoom);
@@ -437,7 +446,7 @@ var GameSpace = (function() {
 		this.createRoom(outerWalls, this.map);
 
 		// Creates random rooms on map. DOES NOT SCALE WITH SIZE OF LEVEL leads to infinite loops on smaller levels.
-		this.randomRooms(ROOMS_QUANTITY);
+		this.randomRooms(STATE.ROOMS_QUANTITY);
 		// console.log(Math.sqrt(this.columns*this.rows)/1.5);	
 	};
 	// THIS DOES NOTHING, but will eventually be called by createMonsters
@@ -456,7 +465,7 @@ var GameSpace = (function() {
 			else if(this.depth === 1) {
 				var randomMonster = new Kobold(randomX, randomY);
 			}
-			else if(this.depth === 2) {
+			else if(this.depth >= 2) {
 				var randomMonster = new Goblin(randomX, randomY);
 			}
 			if(this.map[randomY][randomX].class === 'dot') {
@@ -563,6 +572,7 @@ var GameSpace = (function() {
 		var self = this;
 		var counter = 0;
 
+		console.log("this.columns):", this.columns);
 		Handlebars.registerHelper("columnCounter", function() {
 			// counter++;
 			// console.log(counter);
@@ -580,6 +590,7 @@ var GameSpace = (function() {
 
 		$("#game-window").append(gameTemplate(self));
 	};
+
 	// Helper function to format currentLevel.map into a matrix usable by Pathfinding.js.
 	Level.prototype.createPFMatrix = function(room) {
 		var matrix = [];
@@ -612,7 +623,7 @@ var GameSpace = (function() {
 			else if(upDown === 'up') {
 				this.placeStairs("down");
 			}
-			this.createMonsters(MONSTER_PER_LEVEL);
+			this.createMonsters(STATE.MONSTER_PER_LEVEL);
 			// // the line below is used for texting new items & inventory
 			// this.map[rogue.y + 1][rogue.x + 1] = new Dagger(1, 1);
 			this.drawMap();
@@ -759,7 +770,7 @@ var GameSpace = (function() {
 				addMessage("The " + this.class + " killed the " + defender.class + "!");
 				currentLevel.emptyTile(defender.x, defender.y);
 				if(defender === rogue) {
-					currentLevel = new Level(MAP_COLUMNS, MAP_ROWS);
+					currentLevel = new Level(STATE.MAP_COLUMNS, STATE.MAP_ROWS);
 					$("#game-window").empty();
 					$("#game-wrapper").prepend(
 						"<div id='dead'>" +
@@ -897,6 +908,19 @@ var GameSpace = (function() {
 		this.maxDamage -= equipment.damageMod;
 		this.defense -= equipment.defenseMod
 	}
+
+	Character.prototype.equipStartingEquipment = function() {
+		// console.log("this.inventory:", this.inventory)
+		for(var key in this.inventory){
+			if(this.inventory[key] instanceof Equipment){
+				this.equip(this.inventory[key]);
+			}
+			// else{
+			// 	console.log("this.inventory.key:", this.inventory.key)
+			// }
+		}
+	}
+
 
 	Character.prototype.directionalMovementHandler = function(horz, vert) {
 		// console.log("horz: ", horz, " vert: ", vert);
@@ -1282,16 +1306,18 @@ var GameSpace = (function() {
 		Item.call(this, x, y);
 		this.x = x;
 		this.y = y;
-		this.label = "Scroll of enchantment";
+		this.label = "Scroll of Enchantment";
 	}
 
 	EnchantScroll.prototype = new Item();
 	EnchantScroll.prototype.constructor = EnchantScroll;
 		
 // everything else
-	// create local 'globals'
-	var currentLevel = new Level(MAP_COLUMNS, MAP_ROWS, 0);
-	var rogue = new Character(1, 1);
+	// // create local 'globals'
+	var currentLevel = null;
+	// var currentLevel = new Level(STATE.MAP_COLUMNS, STATE.MAP_ROWS, 0);
+	var rogue = null;
+	// var rogue = new Character(1, 1);
 	var monstersActive = [];
 	var monstersAvailable = []
 	var totalTurns = 0;
@@ -1302,7 +1328,18 @@ var GameSpace = (function() {
 
 	var initialize = function() {
 		console.log("initialize called");
+		// create local 'globals'
+		currentLevel = new Level(STATE.MAP_COLUMNS, STATE.MAP_ROWS, 0);
+		rogue = new Character(1, 1);
+		// var monstersActive = [];
+		// var monstersAvailable = [];
+		// var totalTurns = 0;
+		var pathFinder = new PF.AStarFinder({
+		    allowDiagonal: true,
+		    dontCrossCorners: false
+		});
 		currentLevel.initializeMap("up");
+		rogue.equipStartingEquipment();
 		rogue.drawInventory();
 		
 	}
