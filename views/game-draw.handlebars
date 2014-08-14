@@ -1,0 +1,13 @@
+<table id="game-table">
+	<tbody> 
+    {{#map}}
+        <tr> 
+        	{{#this}}
+        	<td>
+        		<div class="tile {{class}}" id='{{columnCounter}}-{{rowCounter}}'>{{{text}}}</div>
+    		</td> 
+            {{/this}}
+        </tr> 
+    {{/map}}
+    </tbody> 
+</table>

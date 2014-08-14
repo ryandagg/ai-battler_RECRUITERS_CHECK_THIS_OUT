@@ -1,0 +1,105 @@
+body {
+  margin: 1%;
+  background: gray;
+}
+#game-wrapper {
+  width: 100%;
+}
+
+#game-window {
+  float: left;
+  text-align: center;
+  vertical-align: middle;
+}
+
+#HUD {
+  padding: 1%;
+  background-color: #eee;
+  word-wrap: break-word;
+  vertical-align: top;
+  font-family: "Courier", serif;
+  overflow: hidden;
+}
+
+#messages {
+  height: 300px;
+  background-color: #eee;
+  color: black;
+  overflow-y: scroll;
+  margin-bottom: 1%;
+}
+
+table {
+  background: black;
+  color: #fff;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+td {
+  text-align: center;
+  border: 1px solid #555;
+}
+
+#dead {
+  height: 100%;
+  widows: 1000px;
+  color: red;
+  font-size: 200px;
+  padding-bottom: 100px;
+}
+
+.tile {
+  position: relative;
+  overflow: hidden;
+}
+
+.character {
+  color: #0066FF;
+}
+
+.gold {
+  color: gold;
+}
+
+.wall {
+  color: #777;
+}
+
+.dot {
+  color: #fff;
+}
+
+.rat {
+  color: #996600;
+}
+
+.door {
+  color: brown;
+}
+
+.kobold {
+  color: #00CC00;
+}
+
+.goblin {
+  color: #CC3300;
+}
+
+.text-popup {
+  width: 5%;
+  font-size: 1.4em;
+  position: absolute;
+  z-index: 2;
+  background-color: black;
+}
+
+.close-popup {
+  color: blue;
+  background-color: white;
+}
+
+.hidden {
+  background-color: #333;
+  color: #333;
+}
