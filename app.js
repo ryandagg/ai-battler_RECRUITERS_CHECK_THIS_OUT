@@ -13,6 +13,7 @@ app.get('/', indexController.index);
 app.get('/random-battle', indexController.randomBattle);
 // app.get('/ranodom-battle', indexController.battle);
 app.get('/solo', indexController.solo);
+app.get('/create-team', indexController.createTeam);
 
 
 var server = app.listen(7342, function() {

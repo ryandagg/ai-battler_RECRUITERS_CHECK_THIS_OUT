@@ -4,6 +4,5 @@
     "body-parser": "1.x",
     "jade": "~1.5.0",
     "handlebars": "~2.0.0-alpha.4",
-    "filesystem": "~1.0.1"
   }
 }

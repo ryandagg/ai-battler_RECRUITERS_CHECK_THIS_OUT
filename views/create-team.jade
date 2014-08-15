@@ -1,0 +1,17 @@
+extends layout
+
+block extraHeader
+	link(rel='stylesheet', href='styles/codemirror.css')
+
+block content
+	#text-editor
+
+
+block styles
+	script(src='scripts/codemirror-4.4/lib/codemirror.js')
+	script(src='scripts/codemirror-4.4/mode/javascript/javascript.js')
+	script(src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js')
+	script.
+		var AIFILE = !{JSON.stringify(file)}
+		console.log(AIFILE)
+	script(src='scripts/create-team.js')

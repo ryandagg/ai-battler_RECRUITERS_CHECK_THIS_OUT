@@ -1,121 +1,133 @@
 body {
-  margin: 1%;
-  background: gray;
-  /*background: url('../assets/PlanetCutePNG/WallBlock.png');*/
+	margin: 1%;
+	background: gray;
+	/*background: url('../assets/PlanetCutePNG/WallBlock.png');*/
 
 }
 #game-wrapper {
-  width: 100%;
-  margin-top: 1%;
+	width: 100%;
+	margin-top: 1%;
 }
 
 #game-window {
-  float: left;
-  text-align: center;
-  vertical-align: middle;
+	float: left;
+	text-align: center;
+	vertical-align: middle;
 }
 
 #HUD {
-  padding: 1%;
-  background-color: #eee;
-  word-wrap: break-word;
-  vertical-align: top;
-  font-family: "Courier", serif;
-  overflow: hidden;
+	padding: 1%;
+	background-color: #eee;
+	word-wrap: break-word;
+	vertical-align: top;
+	font-family: "Courier", serif;
+	overflow: hidden;
 }
 
 #messages {
-  height: 300px;
-  background-color: #eee;
-  color: black;
-  overflow-y: scroll;
-  margin-bottom: 1%;
+	height: 300px;
+	background-color: #eee;
+	color: black;
+	overflow-y: scroll;
+	margin-bottom: 1%;
 }
 
 table {
-  background: black;
-  color: #fff;
-  table-layout: fixed;
-  border-collapse: collapse;
+	background: black;
+	color: #fff;
+	table-layout: fixed;
+	border-collapse: collapse;
 }
 
 td {
-  text-align: center;
-  border: 1px solid #555;
+	text-align: center;
+	border: 1px solid #555;
 }
 
 #dead {
-  height: 100%;
-  widows: 1000px;
-  color: red;
-  font-size: 200px;
-  padding-bottom: 100px;
+	height: 100%;
+	widows: 1000px;
+	color: red;
+	font-size: 200px;
+	padding-bottom: 100px;
 }
 
 .tile {
-  position: relative;
-  overflow: hidden;
+	position: relative;
+	overflow: hidden;
 }
 
 .character {
-  /*color: #0066FF;*/
-  background-image: url('../assets/PlanetCutePNG/CharacterCatGirl.png');
-  background-size: 103% 135%;
-  background-repeat: no-repeat;
-  background-position: 0% 100%;
+	/*color: #0066FF;*/
+	background-color: #5CBF45;
+	background-image: url('../assets/PlanetCutePNG/CharacterCatGirl.png');
+	background-size: 103% 135%;
+	background-repeat: no-repeat;
+	background-position: 0% 100%;
 }
 
 .gold {
-  color: gold;
+	color: gold;
 }
 
 .wall {
-  /*color: #777;*/
-  background-image: url('../assets/PlanetCutePNG/WallBlock.png');
-  background-size: 100% 135%;
-  background-repeat: no-repeat;
-  background-position: -5% 100%;
+	/*color: #777;*/
+	background-color: #5CBF45;
+	background-image: url('../assets/PlanetCutePNG/WallBlock.png');
+	background-size: 100% 135%;
+	background-repeat: no-repeat;
+	background-position: -5% 100%;
 
 }
 
 .dot {
-  /*color: #fff;*/
-  background-image: url('../assets/PlanetCutePNG/DirtBlock.png');
-  background-size: 100% 230%;
-  background-repeat: no-repeat;
-  background-position: 0% 50%;
+	/*color: #fff;*/
+	background-image: url('../assets/PlanetCutePNG/GrassBlock.png');
+	background-size: 100% 230%;
+	background-repeat: no-repeat;
+	background-position: 0% 50%;
 }
 
 .rat {
-  color: #996600;
+	/*color: #996600;*/
+	background-color: #5CBF45;
+	background-image: url('../assets/rat1.gif');
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	/*background-position: 0% 0%;*/
 }
 
 .door {
-  color: brown;
+	/*color: brown;*/
+	background-color: #5CBF45;
+	background-image: url('../assets/PlanetCutePNG/DoorTallClosed.png');
+	background-size: 100% 135%;
+	background-repeat: no-repeat;
+	background-position: -5% 100%;
 }
 
 .kobold {
-  color: #00CC00;
+	color: #00CC00;
 }
 
 .goblin {
-  color: #CC3300;
+	color: #CC3300;
 }
 
 .text-popup {
-  width: 5%;
-  font-size: 1.4em;
-  position: absolute;
-  z-index: 2;
-  background-color: black;
+	width: 5%;
+	font-size: 1.4em;
+	position: absolute;
+	z-index: 2;
+	background-color: black;
 }
 
 .close-popup {
-  color: blue;
-  background-color: white;
+	color: blue;
+	background-color: white;
 }
 
 .hidden {
-  background-color: #333;
-  color: #333;
+	background-color: #333;
+	color: #333;
 }

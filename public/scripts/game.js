@@ -48,8 +48,8 @@ var GameSpace = (function() {
 	var updateState = function(str){
 		if(str === 'aiPvp'){
 			state.type = str;
-			state.mapColumns = 20;
-			state.mapRows = 20;
+			state.mapColumns = 15;
+			state.mapRows = 15;
 			state.roomsQuantity = 0;
 			state.roomMinDimension = 0;
 			state.roomMaxDimension = 0;
@@ -544,7 +544,7 @@ var GameSpace = (function() {
 	// Currently works on doors and dots. Could potentially handle items and stairs with conditional statements.
 	Level.prototype.updateDisplay = function(obj1, obj2) {
 		// console.log("updateDisplay obj2", obj2);
-		$(pos(obj1.location())).text(obj1.text);
+		// $(pos(obj1.location())).text(obj1.text);
 		$(pos(obj1.location())).removeClass();
 		$(pos(obj1.location())).addClass(obj1.class + " tile");
 		// console.log("arguments length: ", arguments.length);
@@ -552,7 +552,7 @@ var GameSpace = (function() {
 			// console.log("arguments if triggered");
 			$(pos(obj2.location())).removeClass();
 			$(pos(obj2.location())).addClass(obj2.class + " tile");
-			$(pos(obj2.location())).text(obj2.text);
+			// $(pos(obj2.location())).text(obj2.text);
 		}
 	};
 	
@@ -608,13 +608,13 @@ var GameSpace = (function() {
 			return Math.floor(counter/self.columns);
 		})
 
-		Handlebars.registerHelper("path", function(obj) {
-			console.log("obj:", obj);
-			var image = obj.image;
-			console.log("image:", image)
-			console.log("imageList[image]:", imageList[image])
-			return imageList[image].filePath; 
-		})
+		// Handlebars.registerHelper("path", function(obj) {
+		// 	console.log("obj:", obj);
+		// 	var image = obj.image;
+		// 	console.log("image:", image)
+		// 	console.log("imageList[image]:", imageList[image])
+		// 	return imageList[image].filePath; 
+		// })
 		
 
 		$("#game-window").append(gameTemplate(self));
@@ -646,18 +646,21 @@ var GameSpace = (function() {
 			// called by placeCharacter
 			this.placeCharacterStairs(upDown);
 			// places stairs goind opposite direction of stairs under rogue.
-			if(upDown === 'down') {
-				this.placeStairs("up");
+			console.log("state.type:", state.type)
+			if(state.type === 'solo'){
+				if(upDown === 'down') {
+					this.placeStairs("up");
+				}
+				else if(upDown === 'up') {
+					this.placeStairs("down");
+				}
 			}
-			else if(upDown === 'up') {
-				this.placeStairs("down");
-			}
-			this.createMonsters(state.MonstersPerLevel);
 			// // the line below is used for texting new items & inventory
 			// this.map[rogue.y + 1][rogue.x + 1] = new Dagger(1, 1);
-			this.drawMap();
-			this.darkenRooms(this.roomList);
+			this.createMonsters(state.MonstersPerLevel);
 			this.lightRoomRogueIn(this.roomList);
+			this.darkenRooms(this.roomList);
+			this.drawMap();
 		}
 // Room object used during random map generation.
 	var Room = function(xCenter, yCenter, width, height, doorLocationX, doorLocationY) {
@@ -779,6 +782,7 @@ var GameSpace = (function() {
 		}
 	}
 
+	// this will be phased out to get rid of all random combat calculations.
 	Actor.prototype.damageRoll = function() {
 		var damage = 0;
 		for(var i = 0; i < this.damClump; i++) {
@@ -787,6 +791,7 @@ var GameSpace = (function() {
 		return damage;
 	}
 
+	// this will be phased out to get rid of all random combat calculations.
 	Actor.prototype.attackRoll = function(defender) {
 		var toHitFactor = this.offense - defender.defense + 50;
 		var roll = Math.random() * 100;
@@ -794,13 +799,14 @@ var GameSpace = (function() {
 		return roll < toHitFactor;
 	}
 
-	Actor.prototype.combatHandler = function(defender) {
+	Actor.prototype.soloCombatHandler = function(defender) {
 		if(this.attackRoll(defender)) {
 			var damage = this.damageRoll();
 			defender.health -= damage;
 			if(defender.health < 0) {
 				addMessage("The " + this.class + " killed the " + defender.class + "!");
 				currentLevel.emptyTile(defender.x, defender.y);
+				// if player dies
 				if(defender === rogue) {
 					currentLevel = new Level(state.mapColumns, state.mapRows);
 					$("#game-window").empty();
@@ -812,6 +818,7 @@ var GameSpace = (function() {
 							"</div>");
 
 				}
+				// if monster was killed
 				else if(defender instanceof Monster) {
 					// console.log("monster dead")
 					defender.removeActor(monstersActive);
@@ -826,6 +833,16 @@ var GameSpace = (function() {
 		}
 		else {
 			addMessage("The " + this.class + " missed the " + defender.class + ".")
+		}
+
+	}
+
+	Actor.prototype.combatHandler = function(defender) {
+		if(state.type === 'solo'){
+			this.soloCombatHandler(defender);
+		}
+		else if(state.type === 'aiPvp'){
+
 		}
 
 	}
