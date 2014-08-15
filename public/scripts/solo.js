@@ -30,12 +30,12 @@ $(document).on('ready', function() {
 	})
 
 	// change tile & text on ready
-	GameSpace.resizeTiles();
-	GameSpace.resizeFont();
+	GameSpace.resizeTiles(.75);
+	GameSpace.resizeFont(.75);
 
 	// change map size on resize
 	$(window).resize(function() {
-		GameSpace.resizeTiles();
-		GameSpace.resizeFont();
+		GameSpace.resizeTiles(.75);
+		GameSpace.resizeFont(.75);
 	});
 });

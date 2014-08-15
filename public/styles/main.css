@@ -1,9 +1,12 @@
 body {
   margin: 1%;
   background: gray;
+  /*background: url('../assets/PlanetCutePNG/WallBlock.png');*/
+
 }
 #game-wrapper {
   width: 100%;
+  margin-top: 1%;
 }
 
 #game-window {
@@ -55,7 +58,11 @@ td {
 }
 
 .character {
-  color: #0066FF;
+  /*color: #0066FF;*/
+  background-image: url('../assets/PlanetCutePNG/CharacterCatGirl.png');
+  background-size: 103% 135%;
+  background-repeat: no-repeat;
+  background-position: 0% 100%;
 }
 
 .gold {
@@ -63,11 +70,20 @@ td {
 }
 
 .wall {
-  color: #777;
+  /*color: #777;*/
+  background-image: url('../assets/PlanetCutePNG/WallBlock.png');
+  background-size: 100% 135%;
+  background-repeat: no-repeat;
+  background-position: -5% 100%;
+
 }
 
 .dot {
-  color: #fff;
+  /*color: #fff;*/
+  background-image: url('../assets/PlanetCutePNG/DirtBlock.png');
+  background-size: 100% 230%;
+  background-repeat: no-repeat;
+  background-position: 0% 50%;
 }
 
 .rat {

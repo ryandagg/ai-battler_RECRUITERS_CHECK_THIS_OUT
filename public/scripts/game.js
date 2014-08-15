@@ -24,50 +24,71 @@
 var GameSpace = (function() {
 // helper funcitons
 	// constant variables
-	var STATE = {
+	var state = {
 		type: 'solo',
-		 MAP_COLUMNS: 60,
-		 MAP_ROWS: 40,
-		 ROOMS_QUANTITY: 50,
-		 ROOM_MIN_DIMENSION: 4,
-		 ROOM_MAX_DIMENSION: 9,
-		 MONSTER_PER_LEVEL: 30
+		mapColumns: 60,
+		mapRows: 40,
+		roomsQuantity: 50,
+		roomMinDimension: 4,
+		roomMaxDimension: 9,
+		MonstersPerLevel: 30
 	};
-	// console.log("STATE:", STATE);
+	// console.log("state:", state);
 
-	// if(STATE.type === 'aiPvp') {
-	// 	var MAP_COLUMNS = 20;
-	// 	var MAP_ROWS = 20;
-	// 	var ROOMS_QUANTITY = 0;
-	// 	var ROOM_MIN_DIMENSION = 0;
-	// 	var ROOM_MAX_DIMENSION = 0;
-	// 	var MONSTER_PER_LEVEL = 1;
+	// if(state.type === 'aiPvp') {
+	// 	var mapColumns = 20;
+	// 	var mapRows = 20;
+	// 	var roomsQuantity = 0;
+	// 	var roomMinDimension = 0;
+	// 	var roomMaxDimension = 0;
+	// 	var MonstersPerLevel = 1;
 	// }
 
-	// function to updateState
+	// function to updatestate from solo.
 	var updateState = function(str){
 		if(str === 'aiPvp'){
-			STATE.MAP_COLUMNS = 20;
-			STATE.MAP_ROWS = 20;
-			STATE.ROOMS_QUANTITY = 0;
-			STATE.ROOM_MIN_DIMENSION = 0;
-			STATE.ROOM_MAX_DIMENSION = 0;
-			STATE.MONSTER_PER_LEVEL = 1;
+			state.type = str;
+			state.mapColumns = 20;
+			state.mapRows = 20;
+			state.roomsQuantity = 0;
+			state.roomMinDimension = 0;
+			state.roomMaxDimension = 0;
+			state.MonstersPerLevel = 1;
 		}
-
-		// console.log("STATE-func:", STATE);
+		// console.log("state-func:", state);
 	}
+
+	// image object
+	var Image = function(height, width, filePath) {
+		this.height = height;
+		this.width = width;
+		this.filePath = filePath;
+		this.centerX = width/2;
+		this.centerY = height/2;
+	}
+
+	var imageList = {
+		dirtFloor: new Image(171, 101, '../assets/PlanetCutePNG/DirtBlock.png'),
+		wall: new Image(171, 101, '../assets/PlanetCutePNG/WallBlock.png'),
+		catGirl: new Image(171, 101, '../assets/PlanetCutePNG/CharacterCatGirl.png'),
+		doorClosed: new Image(171, 101, '../assets/PlanetCutePNG/DoorTallClosed.png'),
+	}
+
 	// utility functions for resizing tiles upon window load & resize
-	var resizeTiles = function() {
+	var resizeTiles = function(num) {
 		// var winSize = Math.min($(window).width(), $(window).height()) * 0.85;
-		var winHeight = $(window).height() * 0.85
-		var winWidth = $(window).width() * 0.75
+		var winHeight = $(window).height() * num;
+		var winWidth = $(window).width() * num;
 		$(".tile").width(winWidth / currentLevel.columns);
 		$(".tile").height(winHeight / currentLevel.rows);
+
+		// $(".tile img").width(winWidth / currentLevel.columns);
+		// $(".tile img").height(winHeight / currentLevel.rows);
+		// $(".tile").css('background-size', '100%');
 	}
 
 	// always called with resizeTiles to change font size
-	var resizeFont = function() {
+	var resizeFont = function(num) {
 		// Set font size to scale with square height
 		$('.scale-font').css('font-size', $('.tile').height()*1.05);
 	}
@@ -184,7 +205,7 @@ var GameSpace = (function() {
 	// Called whenever rogue uses stairs.
 	var createNewLevel = function(direction) {
 		// Create new level object.
-		currentLevel = new Level(STATE.MAP_COLUMNS, STATE.MAP_ROWS, currentLevel.depth + direction);
+		currentLevel = new Level(state.mapColumns, state.mapRows, currentLevel.depth + direction);
 
 		// Player goes down.
 		if(direction > 0) {
@@ -405,10 +426,10 @@ var GameSpace = (function() {
 				console.log("randomRoomsWhile maxed out");
 				return this.randomRooms(quantity);
 			}
-			var centerX = Math.floor(Math.random()*(this.columns - STATE.ROOM_MAX_DIMENSION) + STATE.ROOM_MAX_DIMENSION/2) 
-			var centerY = Math.floor(Math.random()*(this.rows - STATE.ROOM_MAX_DIMENSION) + STATE.ROOM_MAX_DIMENSION/2)
-			var width = Math.floor(Math.random() * (STATE.ROOM_MAX_DIMENSION - STATE.ROOM_MIN_DIMENSION) + STATE.ROOM_MIN_DIMENSION)
-			var height = Math.floor(Math.random() * (STATE.ROOM_MAX_DIMENSION - STATE.ROOM_MIN_DIMENSION) + STATE.ROOM_MIN_DIMENSION)
+			var centerX = Math.floor(Math.random()*(this.columns - state.roomMaxDimension) + state.roomMaxDimension/2) 
+			var centerY = Math.floor(Math.random()*(this.rows - state.roomMaxDimension) + state.roomMaxDimension/2)
+			var width = Math.floor(Math.random() * (state.roomMaxDimension - state.roomMinDimension) + state.roomMinDimension)
+			var height = Math.floor(Math.random() * (state.roomMaxDimension - state.roomMinDimension) + state.roomMinDimension)
 
 			var tempRoom = new Room(centerX, centerY, width, height)
 			// this.createRoom(tempRoom);
@@ -446,7 +467,7 @@ var GameSpace = (function() {
 		this.createRoom(outerWalls, this.map);
 
 		// Creates random rooms on map. DOES NOT SCALE WITH SIZE OF LEVEL leads to infinite loops on smaller levels.
-		this.randomRooms(STATE.ROOMS_QUANTITY);
+		this.randomRooms(state.roomsQuantity);
 		// console.log(Math.sqrt(this.columns*this.rows)/1.5);	
 	};
 	// THIS DOES NOTHING, but will eventually be called by createMonsters
@@ -566,7 +587,7 @@ var GameSpace = (function() {
 	// Uses Handlebars.js to create game table & tds in html.
 	Level.prototype.drawMap = function() {
 		$("#game-window").empty();
-		var gameTemplate = Handlebars.templates['game-draw'];
+		var gameTemplate = Handlebars.templates['game-draw-images'];
 		// var sourceGame = Handlebars.templates['game-draw'];
 		// var gameTemplate = Handlebars.compile(sourceGame);
 		var self = this;
@@ -585,6 +606,14 @@ var GameSpace = (function() {
 			counter++;
 			// console.log(self.rows);
 			return Math.floor(counter/self.columns);
+		})
+
+		Handlebars.registerHelper("path", function(obj) {
+			console.log("obj:", obj);
+			var image = obj.image;
+			console.log("image:", image)
+			console.log("imageList[image]:", imageList[image])
+			return imageList[image].filePath; 
 		})
 		
 
@@ -623,7 +652,7 @@ var GameSpace = (function() {
 			else if(upDown === 'up') {
 				this.placeStairs("down");
 			}
-			this.createMonsters(STATE.MONSTER_PER_LEVEL);
+			this.createMonsters(state.MonstersPerLevel);
 			// // the line below is used for texting new items & inventory
 			// this.map[rogue.y + 1][rogue.x + 1] = new Dagger(1, 1);
 			this.drawMap();
@@ -647,6 +676,7 @@ var GameSpace = (function() {
 		this.x = x;
 		this.y = y;
 		this.text = "·";
+		this.image = 'dirtFloor'
 		this.class = "dot"
 		this.impassable = false
 		this.inspectText = "A dank dungeon floor.";
@@ -666,6 +696,7 @@ var GameSpace = (function() {
 	var Wall = function(x, y) {
 		Tile.call(this, x, y);
 		this.text = "#"
+		this.image = 'wall'
 		this.class = "wall"
 		this.impassable = true;
 		this.inspectText = "A solid wall."
@@ -678,6 +709,7 @@ var GameSpace = (function() {
 		Tile.call(this, x, y);
 		this.text = "+"
 		this.class = "door";
+		this.image = 'doorClosed'
 		this.inspectText = "A door. I wonder what is on the other side.";
 	}
 
@@ -770,7 +802,7 @@ var GameSpace = (function() {
 				addMessage("The " + this.class + " killed the " + defender.class + "!");
 				currentLevel.emptyTile(defender.x, defender.y);
 				if(defender === rogue) {
-					currentLevel = new Level(STATE.MAP_COLUMNS, STATE.MAP_ROWS);
+					currentLevel = new Level(state.mapColumns, state.mapRows);
 					$("#game-window").empty();
 					$("#game-wrapper").prepend(
 						"<div id='dead'>" +
@@ -803,6 +835,7 @@ var GameSpace = (function() {
 		// Tile.call(this, x, y);
 		Actor.call(this, x, y);
 		this.text = "@";
+		this.image = 'catGirl'
 		this.class = "character";
 		this.inspectText = "A badass MFer.";
 		this.inventoryOpen = false;
@@ -1315,7 +1348,7 @@ var GameSpace = (function() {
 // everything else
 	// // create local 'globals'
 	var currentLevel = null;
-	// var currentLevel = new Level(STATE.MAP_COLUMNS, STATE.MAP_ROWS, 0);
+	// var currentLevel = new Level(state.mapColumns, state.mapRows, 0);
 	// var rogue = null;
 	var rogue = new Character(1, 1);
 	var monstersActive = [];
@@ -1329,7 +1362,7 @@ var GameSpace = (function() {
 	var initialize = function() {
 		console.log("initialize called");
 		// create local 'globals'
-		currentLevel = new Level(STATE.MAP_COLUMNS, STATE.MAP_ROWS, 0);
+		currentLevel = new Level(state.mapColumns, state.mapRows, 0);
 		// console.log("currentLevel:", currentLevel)
 		// rogue = new Character(1, 1);
 		// console.log("rogue:", rogue)
@@ -1349,7 +1382,7 @@ var GameSpace = (function() {
 	return {
 		// only returning these for debugging, no need in actual game.
 		GameSpace: GameSpace,
-		STATE: STATE,
+		state: state,
 
 		// actually must be returned for game to work.
 		clickText: clickText,

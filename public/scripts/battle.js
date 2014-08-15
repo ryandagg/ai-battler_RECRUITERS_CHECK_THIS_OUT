@@ -6,7 +6,7 @@ $(document).on('ready', function() {
 		// console.log("count:", count);
 		$("#HUD").hide();
 		GameSpace.updateState('aiPvp');
-		GameSpace.initialize();
+		// GameSpace.initialize();
 		// there is some strange bug where an error occuring after intitialize is called will call jQuery onReady twice. Not sure if it's in jQuery or my code. This stops the infinite loop that occurs after this bug.
 		// console.log("called once?:")
 		// console.log("GameSpace.STATE1:", GameSpace.STATE)
@@ -40,13 +40,13 @@ $(document).on('ready', function() {
 		});
 
 		// change tile & text on ready
-		GameSpace.resizeTiles();
-		GameSpace.resizeFont();
+		GameSpace.resizeTiles(0.90);
+		GameSpace.resizeFont(0.90);
 
 		// change map size on resize
 		$(window).resize(function() {
-			GameSpace.resizeTiles();
-			GameSpace.resizeFont();
+			GameSpace.resizeTiles(0.90);
+			GameSpace.resizeFont(0.90);
 		});
 	}
 });
