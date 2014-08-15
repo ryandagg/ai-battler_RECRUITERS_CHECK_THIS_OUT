@@ -12,5 +12,5 @@ var editor = CodeMirror(document.getElementById('text-editor'), {
 	mode: 'javascript'
 });
 
-// var code = editor.getCode();
-// console.log("code:", code)
+var code = editor.getValue();
+console.log("code:", code);
