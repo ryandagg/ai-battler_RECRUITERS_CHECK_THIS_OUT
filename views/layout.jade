@@ -8,6 +8,7 @@ html(lang='en')
 		block extraHeader
 
 	body
+		a#log-in(href='') Log In
 		nav.navbar-default(role="navigation")
 
 			// Brand and toggle get grouped for better mobile display
@@ -52,6 +53,9 @@ html(lang='en')
 						a(href="/instructions") Instructions
 					li
 						a(href="/createTeam") Create Team AI
+					//- li
+					//- 	span#log-in-link Log In
+						
 					//- li.dropdown
 					//- 	a.dropdown-toggle(href="#" data-toggle="dropdown") Dropdown 
 					//- 		b.caret
@@ -76,6 +80,7 @@ html(lang='en')
 		//- script#game-window-template(type="text/x-handlebars-template" src='game-draw.handlebars')
 		script(src='http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js')
 		script(src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js')
+		script(src='scripts/oauth.min.js')
 		script(type='text/javascript', src='scripts/pathfinding-browser.min.js')
 		script(src='scripts/main.js')
 		
