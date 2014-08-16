@@ -26,12 +26,12 @@ var GameSpace = (function() {
 	// constant variables
 	var state = {
 		type: 'solo',
-		mapColumns: 60,
-		mapRows: 40,
-		roomsQuantity: 50,
+		mapColumns: 40,
+		mapRows: 30,
+		roomsQuantity: 32,
 		roomMinDimension: 4,
-		roomMaxDimension: 9,
-		MonstersPerLevel: 30
+		roomMaxDimension: 6,
+		MonstersPerLevel: 15
 	};
 	// console.log("state:", state);
 
@@ -658,9 +658,9 @@ var GameSpace = (function() {
 			// // the line below is used for texting new items & inventory
 			// this.map[rogue.y + 1][rogue.x + 1] = new Dagger(1, 1);
 			this.createMonsters(state.MonstersPerLevel);
+			this.drawMap();
 			this.lightRoomRogueIn(this.roomList);
 			this.darkenRooms(this.roomList);
-			this.drawMap();
 		}
 // Room object used during random map generation.
 	var Room = function(xCenter, yCenter, width, height, doorLocationX, doorLocationY) {

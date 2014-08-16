@@ -67,7 +67,6 @@ app.use(passportConfig.ensureAuthenticated);
 
 // Because this route occurs after the ensureAuthenticated middleware, it will require authentication before access is allowed.
 app.get('/random-battle', indexController.randomBattle);
-// app.get('/ranodom-battle', indexController.battle);
 app.get('/solo', indexController.solo);
 app.get('/create-team', indexController.createTeam);
 
