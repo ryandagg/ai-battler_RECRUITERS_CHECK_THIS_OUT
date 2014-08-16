@@ -8,7 +8,9 @@ var indexController = {
 	},
 
 	randomBattle: function(req, res) {
-		res.render('random-battle');
+		res.render('random-battle', {
+			aiCode: req.user.team
+		});
 	},
 
 	solo: function(req, res) {
@@ -16,24 +18,15 @@ var indexController = {
 	},
 
 	createTeam: function(req, res) {
-		fs.readFile('models/ai.js', 'utf-8', function(err, theFile){
-			// console.log("err:", err);
-			if(err){
-				console.log('readfile failed index.js');
-			}
-			else{
-				console.log("theFile:", theFile);
-				res.render('create-team', {
-					file: theFile
-				});
-			}
-		})
+		res.render('create-team', {
+			file: req.user.team
+		});
 	},
 
 	saveTeam: function(req, res){
-		console.log("req.user.team:", req.user.team);
+		// console.log("req.user.team:", req.user.team);
 		req.user.team = req.body.team;
-		req.user.save();
+		req.user.save()
 	}
 };
 
