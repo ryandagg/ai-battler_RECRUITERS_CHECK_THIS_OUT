@@ -4,7 +4,7 @@
 
 body {
 	margin: 1%;
-	background: gray;
+	background: url('../assets/bg-grill-dark.png') repeat;
 	/*background: url('../assets/PlanetCutePNG/WallBlock.png');*/
 
 }

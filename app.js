@@ -57,9 +57,9 @@ app.post('/auth/signup', authenticationController.processSignup);
 // Any requests to log out can be handled at this url
 app.get('/auth/logout', authenticationController.logout);
 
-
-// Route handlers
+// Non-login route handlers
 app.get('/', indexController.index);
+app.post("/save-team", indexController.saveTeam);
 
 // ***** IMPORTANT ***** //
 // By including this middleware (defined in our config/passport.js module.exports), we can prevent unauthorized access to any route handler defined after this call to .use()

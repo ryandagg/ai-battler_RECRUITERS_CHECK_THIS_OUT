@@ -147,8 +147,8 @@ var GameSpace = (function() {
 		$("#messages").prepend("<p class='a-message'>" + text + "</p>")
 	}
 
-	// maintains turn count and monster turns. Always called after an action is taken by the rogue.
-	var turnHandler = function () {
+	// Maintains turn count and monster turns. Always called after an action is taken by the rogue.
+	var soloTurnHandler = function () {
 		for(var i = 0; i < monstersActive.length; i++) {
 			monsterTurn(monstersActive[i]);
 		}
@@ -162,6 +162,21 @@ var GameSpace = (function() {
 		// rogue.drawInventory(); // this does not appear to be needed here.
 		totalTurns++;
 		addMessage("----------- Turn " + totalTurns + " -----------");
+	}
+
+	// Handles turns for AI characters.
+	var aiPvpTurnHandler = function() {
+		Warrior.turn();
+	}
+
+	
+	var turnHandler = function () {
+		if(state.type === 'solo'){
+			soloTurnHandler();
+		}
+		else if(state.type === 'aiPvp'){
+			aiPvpTurnHandler();
+		}
 	}
 
 	// called for each monster after the rogue's turn.

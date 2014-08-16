@@ -1,4 +1,6 @@
 var fs = require('fs');
+var mongoose = require('mongoose');
+var User = require('../models/user');
 
 var indexController = {
 	index: function(req, res) {
@@ -26,6 +28,12 @@ var indexController = {
 				});
 			}
 		})
+	},
+
+	saveTeam: function(req, res){
+		console.log("req.user.team:", req.user.team);
+		req.user.team = req.body.team;
+		req.user.save();
 	}
 };
 

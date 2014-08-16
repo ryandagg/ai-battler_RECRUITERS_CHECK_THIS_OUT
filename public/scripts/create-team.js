@@ -14,3 +14,11 @@ var editor = CodeMirror(document.getElementById('text-editor'), {
 
 var code = editor.getValue();
 console.log("code:", code);
+
+$(document).on("ready", function(){
+	$(document).on("click", '#code-save-btn', function(e){
+		e.preventDefault();
+		// get the value of the code mirror text and send to server
+		$.post("/save-team", {team: editor.getValue()});
+	})
+})

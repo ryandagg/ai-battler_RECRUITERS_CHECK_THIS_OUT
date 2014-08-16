@@ -2,9 +2,14 @@ extends layout
 
 block extraHeader
 	link(rel='stylesheet', href='styles/codemirror.css')
+	link(rel='stylesheet', href='styles/create-team.css')
 
 block content
-	#text-editor
+	#code-wrapper
+		form.form-group
+			input#team-name(class='form-control' type='text' placeholder="enter team name")
+		#text-editor
+		button#code-save-btn.btn.default-btn.btn-primary Save team
 
 
 block styles
