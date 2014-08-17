@@ -81,7 +81,12 @@ var GameSpace = (function() {
 		var winWidth = $(window).width() * num;
 		$(".tile").width(winWidth / currentLevel.columns);
 		$(".tile").height(winHeight / currentLevel.rows);
-
+		// this is having no effect because main wrapper is smaller than the divs it contains after resizing...
+		$('#main-wrapper').css({
+			"margin": '0 auto',
+			"float": 'none',
+			"display": 'block'
+		})
 		// $(".tile img").width(winWidth / currentLevel.columns);
 		// $(".tile img").height(winHeight / currentLevel.rows);
 		// $(".tile").css('background-size', '100%');

@@ -13,6 +13,13 @@ body {
 	margin-top: 1%;
 }
 
+#main-wrapper{
+	margin: 0 auto;
+	float: none;
+	display: block;
+}
+
+/*this is not working to center at all.*/
 #game-window {
 	float: left;
 	text-align: center;
