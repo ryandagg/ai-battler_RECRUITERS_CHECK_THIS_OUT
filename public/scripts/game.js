@@ -871,26 +871,24 @@ var GameSpace = (function() {
 	var Character = function(x, y) {
 		// Tile.call(this, x, y);
 		Actor.call(this, x, y);
-		this.text = "@";
-		this.image = 'catGirl'
+		// this.text = "@";
+		// this.image = 'catGirl'
 		this.class = "character";
-		this.inspectText = "A badass MFer.";
+		// this.inspectText = "A badass MFer.";
 		this.inventoryOpen = false;
 		this.inventoryFocus = null;
 		this.tunneling = false;
 
 		// combat stats
-		this.maxHealth = this.healthBase;
-		this.health = this.maxHealth;
-		this.offense = this.offenseBase;
-		this.defense = this.defenseBase;
-		this.maxDamage = this.maxDamageBase;
+		// this.maxHealth = this.healthBase;
+		// this.health = this.maxHealth;
+		// this.offense = this.offenseBase;
+		// this.defense = this.defenseBase;
+		// this.maxDamage = this.maxDamageBase;
 
 		// inventory
 		this.gold = 0;
 		this.inventory = {a: null, b: null, c: null, d: null, e: null, f: null, g: null, h: null, i: null, j: null, k: null, l: null, m: null, n: null, o: null, p: null, q: null, r: null, s: null, t: null, u: null, v: null, x: null, y: null, z: null};
-		this.inventory.a = new Dagger(x, y, false);
-		this.inventory.b = new LeatherArmor(x, y, false);
 	}
 
 	Character.prototype = new Actor();
@@ -995,7 +993,7 @@ var GameSpace = (function() {
 	Character.prototype.directionalMovementHandler = function(horz, vert) {
 		// console.log("horz: ", horz, " vert: ", vert);
 		var nextTile = currentLevel.map[this.y + vert][this.x + horz];
-
+		console.log("nextTile:", nextTile)
 		if(nextTile.impassable && this.tunneling) {
 				for(var i = 0; i < 20; i++) {
 					turnHandler();
@@ -1172,6 +1170,32 @@ var GameSpace = (function() {
 		// uncomment this to throw the "call initialize on ready twice bug"
 		// $("#inventory").append("blah" + ": " + this.inventory[blah] + "<br>");
 	}
+// Specific character 'classes.' Really just characters with different starting equipment.
+	var Rogue = function(x, y) {
+		// Tile.call(this, x, y);
+		Character.call(this, x, y);
+		this.text = "@";
+		this.image = 'catGirl'
+		this.class = "character";
+		this.inspectText = "A badass MFer.";
+		this.inventoryOpen = false;
+		this.inventoryFocus = null;
+		this.tunneling = false;
+
+		// combat stats
+		this.maxHealth = this.healthBase;
+		this.health = this.maxHealth;
+		this.offense = this.offenseBase;
+		this.defense = this.defenseBase;
+		this.maxDamage = this.maxDamageBase;
+
+		// inventory
+		this.inventory.a = new Dagger(x, y, false);
+		this.inventory.b = new LeatherArmor(x, y, false);
+	}
+
+	Rogue.prototype = new Character();
+	Rogue.prototype.constructor = Rogue;
 
 // monster related code
 	var Monster = function(x, y) {
@@ -1387,7 +1411,7 @@ var GameSpace = (function() {
 	var currentLevel = null;
 	// var currentLevel = new Level(state.mapColumns, state.mapRows, 0);
 	// var rogue = null;
-	var rogue = new Character(1, 1);
+	var rogue = new Rogue(1, 1);
 	var monstersActive = [];
 	var monstersAvailable = []
 	var totalTurns = 0;
