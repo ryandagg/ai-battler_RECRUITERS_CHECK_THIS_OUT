@@ -1,7 +1,7 @@
 // AI Battle Tactics can only understand your robot
 // if its class is called 'Team'
 var Team = function(x, y, name) {
-	// Do not modify the next 2 lines as they are needed for the game to run correctly.
+	// Do NOT modify the next 2 lines as they are needed for the game to run correctly.
 	this.name = name;
 	GameSpace.Squad.call(this, x, y);
 
@@ -9,7 +9,7 @@ var Team = function(x, y, name) {
     this.turnOrder = ['warrior', 'rogue', 'priest'];
 };
 
-// Do not modify the next 2 lines as they are needed for the game to run correctly.
+// Do NOT modify the next 2 lines as they are needed for the game to run correctly.
 Team.prototype = new GameSpace.Squad();
 Team.prototype.constructor = Team;
 

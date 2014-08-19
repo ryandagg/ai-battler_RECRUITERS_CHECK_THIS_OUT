@@ -1306,7 +1306,6 @@ var GameSpace = (function() {
 	var Warrior = function(x, y) {
 		// Tile.call(this, x, y);
 		Character.call(this, x, y);
-		this.text = "@";
 		// this.image = 'catGirl'
 		this.class = "warrior";
 		this.inspectText = "A badass MFer.";
@@ -1381,7 +1380,6 @@ var GameSpace = (function() {
 
 	var Rat = function(x, y) {
 		Monster.call(this, x, y);
-		Tile.call(this, x, y)
 		this.class = 'rat'
 		this.text = 'r'
 		this.inspectText = "A enormous, mangy rat. It looks hungry."
@@ -1400,7 +1398,6 @@ var GameSpace = (function() {
 
 	var Kobold = function(x, y) {
 		Monster.call(this, x, y);
-		Tile.call(this, x, y);
 		this.class = 'kobold'
 		this.text = 'k'
 		this.inspectText = "A short, reptilian humanoid. It walks on two legs and wants to stab you."
@@ -1419,7 +1416,6 @@ var GameSpace = (function() {
 
 	var Goblin = function(x, y) {
 		Monster.call(this, x, y);
-		Tile.call(this, x, y);
 		this.class = 'goblin'
 		this.text = 'g'
 		this.inspectText = "A short, twisted version of a man."
@@ -1438,8 +1434,7 @@ var GameSpace = (function() {
 
 // loot and equipment
 	var Item = function(x, y) {
-		this.x = x;
-		this.y = y;
+		Tile.call(this, x, y)
 	}
 
 	Item.prototype = new Tile();
@@ -1451,8 +1446,6 @@ var GameSpace = (function() {
 
 	var Equipment = function(x, y, equipped) {
 		Item.call(this, x, y);
-		this.x = x;
-		this.y = y;
 		this.equipped = equipped || false;
 		this.enchantLevel = 0;
 		this.offenseMod = 0;
@@ -1474,8 +1467,6 @@ var GameSpace = (function() {
 
 	var Weapon = function(x, y, equipped) {
 		Equipment.call(this, x, y, equipped);
-		this.x = x;
-		this.y = y;
 		this.weapon = true;
 		this.text = "^"
 		this.class = "weapon"
@@ -1486,8 +1477,6 @@ var GameSpace = (function() {
 
 	var Dagger = function(x, y, equipped) {
 		Weapon.call(this, x, y, equipped);
-		this.x = x;
-		this.y = y;
 		this.label = "Dagger"
 
 		// combat stuff
@@ -1500,8 +1489,6 @@ var GameSpace = (function() {
 
 	var Sword = function(x, y, equipped) {
 		Weapon.call(this, x, y, equipped);
-		this.x = x;
-		this.y = y;
 		this.label = "Sword"
 
 		// combat stuff
@@ -1514,8 +1501,6 @@ var GameSpace = (function() {
 // armor
 	var Armor = function(x, y, equipped) {
 		Equipment.call(this, x, y, equipped);
-		this.x = x;
-		this.y = y;
 		this.text = ")";
 		this.class = "armor";
 	}
@@ -1525,8 +1510,6 @@ var GameSpace = (function() {
 
 	var LeatherArmor = function(x, y, equipped) {
 		Armor.call(this, x, y, equipped);
-		this.x = x;
-		this.y = y;
 		this.label = "Leather Armor"
 
 		// combat stuff
@@ -1538,8 +1521,6 @@ var GameSpace = (function() {
 
 	var ChainMail = function(x, y, equipped) {
 		Armor.call(this, x, y, equipped);
-		this.x = x;
-		this.y = y;
 		this.label = "Chain Mail"
 
 		// combat stuff
@@ -1553,8 +1534,6 @@ var GameSpace = (function() {
 
 	var Gold = function(x, y, quantity) {
 		Item.call(this, x, y);
-		this.x = x;
-		this.y = y;
 		this.text = "$";
 		this.class = "gold";
 		this.quantity = quantity;
@@ -1566,8 +1545,6 @@ var GameSpace = (function() {
 // scrolls
 	var Scroll = function(x, y) {
 		Item.call(this, x, y);
-		this.x = x;
-		this.y = y;
 		this.text = "~";
 		this.class = "scroll";
 	}
@@ -1577,14 +1554,29 @@ var GameSpace = (function() {
 
 	var EnchantScroll = function(x, y) {
 		Item.call(this, x, y);
-		this.x = x;
-		this.y = y;
 		this.label = "Scroll of Enchantment";
 	}
 
-	EnchantScroll.prototype = new Item();
+	EnchantScroll.prototype = new Scroll();
 	EnchantScroll.prototype.constructor = EnchantScroll;
-		
+	
+// Staves
+	var Staff = function(x, y){
+		Item.call(this, x, y);
+		this.charges = 4;
+	}
+	Staff.prototype = new Item();
+	Staff.prototype.constructor = Staff;
+
+	var HealingStaff = function(x, y){
+		Staff.call(this, x, y);
+		this.range = 1;
+	}
+	HealingStaff.prototype = new Staff();
+	HealingStaff.prototype.constructor = HealingStaff;
+
+	HealingStaff.prototype.
+
 // everything else
 	// // create local 'globals'
 	var currentLevel = null;
