@@ -24,8 +24,9 @@
 
 
 var GameSpace = (function() {
-// helper funcitons
-	// constant variables
+	// constants
+	var TIMER_INTERVAL = 200;
+	// maintain state between solo play and pvp with ai.
 	var state = {
 		type: 'solo',
 		mapColumns: 40,
@@ -35,18 +36,8 @@ var GameSpace = (function() {
 		roomMaxDimension: 6,
 		MonstersPerLevel: 15
 	};
-	// console.log("state:", state);
 
-	// if(state.type === 'aiPvp') {
-	// 	var mapColumns = 20;
-	// 	var mapRows = 20;
-	// 	var roomsQuantity = 0;
-	// 	var roomMinDimension = 0;
-	// 	var roomMaxDimension = 0;
-	// 	var MonstersPerLevel = 1;
-	// }
-
-	// function to updatestate from solo.
+	// function to update state from solo.
 	var updateState = function(str){
 		if(str === 'aiPvp'){
 			state.type = str;
@@ -68,6 +59,14 @@ var GameSpace = (function() {
 		$(".tile").width(winWidth / currentLevel.columns);
 		$(".tile").height(winHeight / currentLevel.rows);
 	};
+
+	// NOT currently doing anything since display was changed from ASCII to images.
+	// Always called with resizeTiles to change font size.
+	var resizeFont = function(num) {
+		// Set font size to scale with square height
+		$('.scale-font').css('font-size', $('.tile').height()*1.05);
+	}
+
 	// used to see the current map for ai use.
 	var getMap = function(){
 		return currentLevel.map;
@@ -85,11 +84,13 @@ var GameSpace = (function() {
 		currentLevel.placeTeam(team, str);
 	}
 
-	// NOT currently doing anything since display was changed from ASCII to images.
-	// Always called with resizeTiles to change font size.
-	var resizeFont = function(num) {
-		// Set font size to scale with square height
-		$('.scale-font').css('font-size', $('.tile').height()*1.05);
+	var updateTeam = function(num, team){
+		if(num === 1){
+			team1 = team;
+		}
+		else if (num === 2){
+			team2 = team;
+		}
 	}
 
 	// Formats location of object to reference tile id. Used by other funcitons to update display.
@@ -163,9 +164,51 @@ var GameSpace = (function() {
 		addMessage("----------- Turn " + totalTurns + " -----------");
 	}
 
+	var pvpTurnOrder = [];
+	var setPvpTurnOrder = function() {
+		// console.log("team1, team2:", team1, team2)
+		var random = Math.random();
+		var firstTeam = team1;
+		var secondTeam = team2;
+		if(random > 0.5){
+			firstTeam = team2;
+			secondTeam = team1;
+		}
+		for(var i = 0; i < team1.turnOrder.length; i++){
+			pvpTurnOrder.push([firstTeam.turnOrder[i], firstTeam.name]);
+			pvpTurnOrder.push([secondTeam.turnOrder[i], secondTeam.name]);
+		}
+		console.log("pvpTurnOrder:", pvpTurnOrder);
+	}
+
 	// Handles turns for AI characters.
 	var aiPvpTurnHandler = function() {
-		Warrior.turn();
+		var currentTurn = pvpTurnOrder[totalTurns % (team1.turnOrder.length + team2.turnOrder.length)];
+		console.log("currentTurn:", currentTurn)
+		if(currentTurn[1] === 'team1'){
+			if(currentTurn[0] === 'rogue' && team1.rogue.health > 0){
+				team1.turnRogue(currentLevel, team1.rogue);
+			}
+			else if(currentTurn[0] === 'priest' && team1.priest.health > 0){
+				team1.turnPriest(currentLevel, team1.priest);
+			}
+			else if(currentTurn[0] === 'warrior' && team1.warrior.health > 0){
+				team1.turnWarrior(currentLevel, team1.warrior);
+			}
+		}
+		else if(currentTurn[1] === 'team2'){
+			if(currentTurn[0] === 'rogue' && team2.rogue.health > 0){
+				team2.turnRogue(currentLevel, team2.rogue);
+			}
+			else if(currentTurn[0] === 'priest' && team2.priest.health > 0){
+				team2.turnPriest(currentLevel, team2.priest);
+			}
+			else if(currentTurn[0] === 'warrior' && team2.warrior.health > 0){
+				team2.turnWarrior(currentLevel, team2.warrior);
+			}
+		}
+		console.log("totalTurns:", totalTurns)
+		totalTurns++;
 	}
 
 	
@@ -174,8 +217,13 @@ var GameSpace = (function() {
 			soloTurnHandler();
 		}
 		else if(state.type === 'aiPvp'){
-			aiPvpTurnHandler();
+			// aiPvpTurnHandler();
 		}
+	}
+
+	var startTimer = function() {
+		console.log("timer started:");
+		var timer = setInterval(aiPvpTurnHandler, TIMER_INTERVAL);
 	}
 
 	// called for each monster after the rogue's turn.
@@ -569,7 +617,7 @@ var GameSpace = (function() {
 	// Used in aiPvp to place each team. 
 	// How do I want to do this? Random map choice
 	Level.prototype.placeTeam = function(team, str){
-		console.log("team:", team)
+		// console.log("team:", team)
 		for(var key in team){
 			// console.log("team.key:", team.key)
 			if(team[key].y){
@@ -704,7 +752,7 @@ var GameSpace = (function() {
 			this.createTerrain();
 			// called by placeCharacter
 			// places stairs goind opposite direction of stairs under rogue.
-			console.log("state.type:", state.type)
+			// console.log("state.type:", state.type)
 			if(state.type === 'solo'){
 				this.placeCharacterStairs(upDown);
 				if(upDown === 'down') {
@@ -897,13 +945,22 @@ var GameSpace = (function() {
 		}
 
 	}
+	Actor.prototype.aiPvpCombatHandler = function(defender) {
+		if(this.attackRoll(defender)) {
+			var damage = this.damageRoll();
+			defender.health -= damage;
+			if(defender.health < 0) {
+				currentLevel.emptyTile(defender.x, defender.y);
+			}
+		}
+	}
 
 	Actor.prototype.combatHandler = function(defender) {
 		if(state.type === 'solo'){
 			this.soloCombatHandler(defender);
 		}
 		else if(state.type === 'aiPvp'){
-
+			this.aiPvpCombatHandler(defender)
 		}
 
 	}
@@ -1029,24 +1086,31 @@ var GameSpace = (function() {
 			// }
 		}
 	}
-
+	Character.prototype.move = function(horz, vert){
+		this.directionalMovementHandler(horz, vert);
+	}
 
 	Character.prototype.directionalMovementHandler = function(horz, vert) {
 		// console.log("horz: ", horz, " vert: ", vert);
 		var nextTile = currentLevel.map[this.y + vert][this.x + horz];
 		// console.log("nextTile:", nextTile);
 		if(nextTile.impassable && this.tunneling) {
-				for(var i = 0; i < 20; i++) {
-					turnHandler();
-				}
-				addMessage("You dig through the wall with your pick.");
-				currentLevel.emptyTile(this.x + horz, this.y + vert);
-				this.tunneling = false;
+			for(var i = 0; i < 20; i++) {
+				turnHandler();
+			}
+			addMessage("You dig through the wall with your pick.");
+			currentLevel.emptyTile(this.x + horz, this.y + vert);
+			this.tunneling = false;
 		}
 		else if(nextTile.impassable) {
+			if(state.type === 'solo'){
 				addMessage("You shall not pass!")
+			}
+			else if(state.type === 'aiPvp'){
+				// setTimeout(aiPvpTurnHandler, TIMER_INTERVAL);
+			}
 		}
-		else if(nextTile instanceof Monster) {
+		else if(nextTile instanceof Monster || nextTile instanceof Character) {
 			this.combatHandler(currentLevel.map[this.y + vert][this.x + horz]);
 			turnHandler();
 		}
@@ -1057,9 +1121,10 @@ var GameSpace = (function() {
 			addMessage("You kick down the door. A loud noise reverberates throughout the dungeon.")
 			turnHandler();
 		}
-		else if(nextTile instanceof Character) {
-			turnHandler();
-		}
+		// // what does this do?
+		// else if(nextTile instanceof Character) {
+		// 	turnHandler();
+		// }
 		else if(nextTile instanceof Gold) {
 			this.gold += currentLevel.map[this.y + vert][this.x + horz].quantity;
 			currentLevel.map[this.y + vert][this.x + horz] = new Tile(this.x + horz, this.y + vert);
@@ -1560,8 +1625,10 @@ var GameSpace = (function() {
 		
 	}
 
-
 	var finalInitialize = function(){
+		if(state.type === 'aiPvp'){
+			setPvpTurnOrder();
+		}
 		console.log("finalInitialize called");
 		rogue.drawInventory();
 		currentLevel.drawMap();
@@ -1583,10 +1650,12 @@ var GameSpace = (function() {
 		preInitialize: preInitialize,
 		finalInitialize: finalInitialize,
 		getTeamSpace: getTeamSpace,
+		updateTeam: updateTeam,
 		team1: team1,
 		team2: team2,
 		putTeamOnMap: putTeamOnMap,
-		Squad: Squad
+		Squad: Squad,
+		startTimer: startTimer
 
 	}
-})();
+})(); 

@@ -6,8 +6,9 @@ $(document).on('ready', function() {
 		// console.log("count:", count);
 		coordinates = GameSpace.getTeamSpace();
 		// console.log("coordinates:", coordinates);
-		GameSpace.team2 = new Team(coordinates[0], coordinates[1], 'team2');
-		GameSpace.putTeamOnMap(GameSpace.team2, 'team2');
+		team = new Team(coordinates[0], coordinates[1], 'team2');
+		GameSpace.updateTeam(2, team);
+		GameSpace.putTeamOnMap(team, 'team2');
 		// GameSpace.initialize();
 		// there is some strange bug where an error occuring after intitialize is called will call jQuery onReady twice. Not sure if it's in jQuery or my code. This stops the infinite loop that occurs after this bug.
 		// console.log("called once?:")
@@ -22,6 +23,12 @@ $(document).on('ready', function() {
 			},100)
 		};
 		// console.log("GameSpace.STATE2:", GameSpace.STATE);
+
+		// change tile & text on ready
+		GameSpace.resizeTiles(0.90);
+		GameSpace.resizeFont(0.90);
+
+		GameSpace.startTimer();
 
 		// keyboard handler
 		$(document).keypress(function(e) {
@@ -41,9 +48,7 @@ $(document).on('ready', function() {
 			$(".text-popup").remove();
 		});
 
-		// change tile & text on ready
-		GameSpace.resizeTiles(0.90);
-		GameSpace.resizeFont(0.90);
+		
 
 		// change map size on resize
 		$(window).resize(function() {
