@@ -230,7 +230,7 @@ var GameSpace = (function() {
 	var monsterTurn = function(monster) {
 		// build a clone of currentLevel, formatted to work with Pathfinding.js.
 		// should run a distance check before running this to improve performance.
-		var tempMatrix = currentLevel.createPFMatrix(currentLevel.map);
+		var tempMatrix = currentLevel.createPFMatrix(currentLevel.map, monster, rogue);
 		// console.log(tempMatrix);
 		// tempMatrix[monster.y][monster.x] = 0; // apparently does nothing.
 		var grid = new PF.Grid(currentLevel.columns, currentLevel.rows, tempMatrix);
@@ -622,6 +622,7 @@ var GameSpace = (function() {
 			// console.log("team.key:", team.key)
 			if(team[key].y){
 				team[key].class += ' ' + str;
+				team[key].team = str;
 				this.map[team[key].y][team[key].x] = team[key];
 			}
 		}
@@ -728,12 +729,24 @@ var GameSpace = (function() {
 	};
 
 	// Helper function to format currentLevel.map into a matrix usable by Pathfinding.js.
-	Level.prototype.createPFMatrix = function(room) {
+	Level.prototype.createPFMatrix = function(room, seeker, target) {
 		var matrix = [];
 		for (var y = 0; y < this.rows; y++) {
 			var row = [];
 			for(var x = 0; x < this.columns; x++) {
-				if(room[y][x].class === 'wall' || room[y][x].class === 'door') {
+				if(room[y][x] === seeker || room[y][x] === target){
+					row.push(0);
+					if(room[y][x] === seeker){
+						console.log("pfmatrix found seeker:")
+					}
+					else{
+						console.log("pfmatrix found target:")
+					}
+				}
+				else if(state.type === 'solo' && (room[y][x] instanceof Wall || room[y][x] instanceof Door)) {
+					row.push(1);
+				}
+				else if(state.type === 'aiPvp' && (room[y][x] instanceof Wall || room[y][x] instanceof Door || room[y][x] instanceof Character)) {
 					row.push(1);
 				}
 				else {
@@ -742,6 +755,7 @@ var GameSpace = (function() {
 			}
 			matrix.push(row);
 		}
+		console.log("matrix:", matrix)
 		return matrix;
 	}
 
@@ -976,6 +990,7 @@ var GameSpace = (function() {
 		this.inventoryOpen = false;
 		this.inventoryFocus = null;
 		this.tunneling = false;
+		this.team = null;
 
 		// combat stats
 		// this.maxHealth = this.healthBase;
@@ -1089,6 +1104,39 @@ var GameSpace = (function() {
 	Character.prototype.move = function(horz, vert){
 		this.directionalMovementHandler(horz, vert);
 	}
+
+	Character.prototype.moveTo = function(enemyClass){
+		var target = null;
+		var classKey = {priest: Priest, warrior: Warrior, rogue: Rogue}
+		if(this.team === 'team1'){
+			// console.log('team1 selected');
+			// console.log("currentLevel.rows:", currentLevel.rows)
+			// console.log("currentLevel.columns:", currentLevel.columns)
+			for(var y = 0; y < currentLevel.rows; y++){
+				for(var x = 0; x < currentLevel.columns; x++){
+					// console.log("x, y:", x, y)
+					if(currentLevel.map[y][x].team === 'team2' & currentLevel.map[y][x] instanceof classKey[enemyClass]){
+						target = [x, y];
+					}
+				}
+			}
+		}
+		var targetObj = currentLevel.map[target[1]][target[0]]
+		console.log("target:;", target, currentLevel.map[target[1]][target[0]]);
+		var tempMatrix = currentLevel.createPFMatrix(currentLevel.map, this, targetObj);
+		// console.log(tempMatrix);
+		// tempMatrix[monster.y][monster.x] = 0; // apparently does nothing.
+		var grid = new PF.Grid(currentLevel.columns, currentLevel.rows, tempMatrix);
+		// var testPath = pathFinder.findPath(0, 0, 0, 1, grid);
+		// console.log(testPath);
+
+		var path = pathFinder.findPath(this.x, this.y, targetObj.x, targetObj.y, grid);
+		console.log("path:", path)
+		var horz = path[1][0] - this.x;
+		var vert = path[1][1] - this.y;
+		this.directionalMovementHandler(horz, vert);
+	}
+
 
 	Character.prototype.directionalMovementHandler = function(horz, vert) {
 		// console.log("horz: ", horz, " vert: ", vert);
