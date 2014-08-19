@@ -13,20 +13,56 @@ var Team = function(x, y, name) {
 Team.prototype = new GameSpace.Squad();
 Team.prototype.constructor = Team;
 
-
 Team.prototype.turnRogue = function(map, rogue) {
 	// .move takes coordinates x, y and moves the character. Remember that the top of the map is y = 0 and it gets higher as you move down.
 	// You can only move a character by 1 square at a time. If you put in a number out side of [-1, 1] it will still only move 1 square. It only accepts integers. "Moving" on to an enemy atacks them. Same with your own team...
 
 	// Move the character to the right by 1 square.
-    rogue.move(1, 0);
+    if(rogue.checkHealthPercent('enemy', 'priest')){
+    	rogue.moveTo('enemy', 'priest');
+    }
+    else if(rogue.checkHealthPercent('enemy', 'warrior')){
+    	rogue.moveTo('enemy', 'warrior');
+    }
+    else if(rogue.checkHealthPercent('enemy', 'rogue')){
+    	rogue.moveTo('enemy', 'rogue');
+    }
 };
 
 Team.prototype.turnPriest = function(map, priest) {
-    priest.move(1, 0);
-
+	if(priest.checkHealthPercent('mine', 'priest') < 0.7){
+		priest.heal([0, 0]);
+	}
+	else if(priest.checkHealthPercent('mine','warrior') < 0.7){
+		var isNextTo = priest.nextTo('mine', 'warrior')
+		if(!isNextTo){
+    		priest.moveTo('mine', 'warrior');
+		}
+		else{
+			priest.heal(isNextTo);
+		}
+	}
+	else{
+		if(priest.checkHealthPercent('enemy', 'priest')){
+    		priest.moveTo('enemy', 'priest');
+	    }
+	    else if(priest.checkHealthPercent('enemy', 'warrior')){
+	    	priest.moveTo('enemy', 'warrior');
+	    }
+	    else if(priest.checkHealthPercent('enemy', 'rogue')){
+	    	priest.moveTo('enemy', 'rogue');
+	    }
+	}
 };
 
 Team.prototype.turnWarrior = function(map, warrior) {
-    warrior.moveTo('priest');
+    if(warrior.checkHealthPercent('enemy', 'priest')){
+    	warrior.moveTo('enemy', 'priest');
+    }
+    else if(warrior.checkHealthPercent('enemy', 'warrior')){
+    	warrior.moveTo('enemy', 'warrior');
+    }
+    else if(warrior.checkHealthPercent('enemy', 'rogue')){
+    	warrior.moveTo('enemy', 'rogue');
+    }
 };

@@ -623,7 +623,9 @@ var GameSpace = (function() {
 			if(team[key].y){
 				team[key].class += ' ' + str;
 				team[key].team = str;
+				team[key].equipStartingEquipment();
 				this.map[team[key].y][team[key].x] = team[key];
+
 			}
 		}
 	}
@@ -736,12 +738,6 @@ var GameSpace = (function() {
 			for(var x = 0; x < this.columns; x++) {
 				if(room[y][x] === seeker || room[y][x] === target){
 					row.push(0);
-					if(room[y][x] === seeker){
-						console.log("pfmatrix found seeker:")
-					}
-					else{
-						console.log("pfmatrix found target:")
-					}
 				}
 				else if(state.type === 'solo' && (room[y][x] instanceof Wall || room[y][x] instanceof Door)) {
 					row.push(1);
@@ -755,7 +751,7 @@ var GameSpace = (function() {
 			}
 			matrix.push(row);
 		}
-		console.log("matrix:", matrix)
+		// console.log("matrix:", matrix)
 		return matrix;
 	}
 
@@ -1105,36 +1101,85 @@ var GameSpace = (function() {
 		this.directionalMovementHandler(horz, vert);
 	}
 
-	Character.prototype.moveTo = function(enemyClass){
-		var target = null;
+	Character.prototype.findCharacter = function(squad, characterClass){
 		var classKey = {priest: Priest, warrior: Warrior, rogue: Rogue}
-		if(this.team === 'team1'){
-			// console.log('team1 selected');
-			// console.log("currentLevel.rows:", currentLevel.rows)
-			// console.log("currentLevel.columns:", currentLevel.columns)
-			for(var y = 0; y < currentLevel.rows; y++){
-				for(var x = 0; x < currentLevel.columns; x++){
-					// console.log("x, y:", x, y)
-					if(currentLevel.map[y][x].team === 'team2' & currentLevel.map[y][x] instanceof classKey[enemyClass]){
-						target = [x, y];
-					}
+		var targetTeam = 'team1';
+		if ((this.team === 'team1' && squad === 'enemy') || this.team === 'team2' && squad === 'mine'){
+			targetTeam = 'team2';
+		}
+		
+		for(var y = 0; y < currentLevel.rows; y++){
+			for(var x = 0; x < currentLevel.columns; x++){
+				// console.log("x, y:", x, y)
+				if(currentLevel.map[y][x].team === targetTeam & currentLevel.map[y][x] instanceof classKey[characterClass]){
+					return currentLevel.map[y][x]
 				}
 			}
 		}
-		var targetObj = currentLevel.map[target[1]][target[0]]
-		console.log("target:;", target, currentLevel.map[target[1]][target[0]]);
-		var tempMatrix = currentLevel.createPFMatrix(currentLevel.map, this, targetObj);
-		// console.log(tempMatrix);
-		// tempMatrix[monster.y][monster.x] = 0; // apparently does nothing.
-		var grid = new PF.Grid(currentLevel.columns, currentLevel.rows, tempMatrix);
-		// var testPath = pathFinder.findPath(0, 0, 0, 1, grid);
-		// console.log(testPath);
+	}
 
-		var path = pathFinder.findPath(this.x, this.y, targetObj.x, targetObj.y, grid);
-		console.log("path:", path)
-		var horz = path[1][0] - this.x;
-		var vert = path[1][1] - this.y;
-		this.directionalMovementHandler(horz, vert);
+	Character.prototype.nextTo = function(squad, characterClass){
+		var targetObj = this.findCharacter(squad, characterClass);
+		// var targetObj = currentLevel.map[target[1]][target[0]];
+		// var path = this.getPath(targetObj);
+		// if(path.length === 2) {
+		// 	return path[1];
+		// }
+		// return false;
+		// for(var y = this.y - 1; y <= this.y + 1; y++){
+		// 	for(var x = this.x - 1; x <= this.x + 1; x++){
+		// 		if(currentLevel.map[y][x] === targetObj){
+		// 			var horz = targetObj.x
+		// 			return [x, y]
+		// 		}
+		// 	}
+		// }
+		if(Math.abs(targetObj.x - this.x) <= 1 && Math.abs(targetObj.y - this.y) <= 1){
+			console.log("[targetObj.x - this.x, targetObj.y - this.y]:", [targetObj.x - this.x, targetObj.y - this.y])
+			return [targetObj.x - this.x, targetObj.y - this.y]
+		}
+		return false
+	}
+
+	Character.prototype.checkHealthPercent = function(squad, characterClass){
+		var targetObj = this.findCharacter(squad, characterClass);
+		// var targetObj = currentLevel.map[target[1]][target[0]];
+		if(!targetObj){
+			return false;
+		}
+		return targetObj.health / targetObj.maxHealth;
+	}
+
+	Character.prototype.getPath = function(targetObj){
+		var tempMatrix = currentLevel.createPFMatrix(currentLevel.map, this, targetObj);
+
+		var grid = new PF.Grid(currentLevel.columns, currentLevel.rows, tempMatrix);
+
+		return pathFinder.findPath(this.x, this.y, targetObj.x, targetObj.y, grid);
+	}
+
+	Character.prototype.moveTo = function(squad, characterClass){
+		var targetObj = this.findCharacter(squad, characterClass);
+		// var targetObj = currentLevel.map[target[1]][target[0]];
+		// console.log("target:;", target, currentLevel.map[target[1]][target[0]]);
+		var path = this.getPath(targetObj);
+		// var tempMatrix = currentLevel.createPFMatrix(currentLevel.map, this, targetObj);
+
+		// var grid = new PF.Grid(currentLevel.columns, currentLevel.rows, tempMatrix);
+
+		// var path = pathFinder.findPath(this.x, this.y, targetObj.x, targetObj.y, grid);
+		console.log("path:", path);
+		if(path.length === 0){
+			var isNextTo = this.nextTo(squad, characterClass)
+		 	if(isNextTo) {
+				this.directionalMovementHandler(isNextTo[0], isNextTo[1]);
+			}
+		}
+		else{
+			var horz = path[1][0] - this.x;
+			var vert = path[1][1] - this.y;
+			this.directionalMovementHandler(horz, vert);
+		}
 	}
 
 
@@ -1694,7 +1739,9 @@ var GameSpace = (function() {
 		
 	}
 
+	// mostly draws display but also interacts with team in pvp after they have been created.
 	var finalInitialize = function(){
+
 		if(state.type === 'aiPvp'){
 			setPvpTurnOrder();
 		}
