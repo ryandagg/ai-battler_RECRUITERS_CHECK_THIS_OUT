@@ -161,14 +161,23 @@ td {
 	background-image: url('../assets/upstairs.png');
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
+
 }
 
 .kobold {
-	color: #00CC00;
+	background-image: url('../assets/kobold.gif');
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	background-color: #5CBF45;
+
 }
 
 .goblin {
-	color: #CC3300;
+	background-image: url('../assets/goblin.gif');
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	background-color: #5CBF45;
+	
 }
 
 .text-popup {

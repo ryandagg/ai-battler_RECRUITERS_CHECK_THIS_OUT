@@ -272,15 +272,19 @@ var GameSpace = (function() {
 		// Player goes down.
 		if(direction > 0) {
 			currentLevel.initializeMap('up');
+			currentLevel.drawMap();
+			currentLevel.lightRoomRogueIn(currentLevel.roomList);
+			currentLevel.darkenRooms(currentLevel.roomList);
 		}
 		// Player goes up.
 		else if(direction < 0) {
 			currentLevel.initializeMap('down');
+			currentLevel.drawMap();
+			currentLevel.lightRoomRogueIn(currentLevel.roomList);
+			currentLevel.darkenRooms(currentLevel.roomList);
 		}
 		// Change size of tiles & font.
-		resizeTiles();
-		resizeFont();
-
+		resizeTiles(.75);
 	}
 
 // Level and map related code.
