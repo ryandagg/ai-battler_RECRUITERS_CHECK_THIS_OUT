@@ -4,14 +4,13 @@ $(document).on('ready', function() {
 	count++;
 	if(count < 2){
 		// console.log("count:", count);
-		$("#HUD").hide();
-		GameSpace.updateState('aiPvp');
+		
 		// GameSpace.initialize();
 		// there is some strange bug where an error occuring after intitialize is called will call jQuery onReady twice. Not sure if it's in jQuery or my code. This stops the infinite loop that occurs after this bug.
 		// console.log("called once?:")
 		// console.log("GameSpace.STATE1:", GameSpace.STATE)
 		try {
-			GameSpace.initialize();
+			GameSpace.finalInitialize();
 		}
 		catch(err) {
 			console.log("initialize failed");

@@ -2,7 +2,8 @@ $(document).on('ready', function() {
 	// GameSpace.STATE = 'solo'
 	// there is some strange bug where an error occuring after intitialize is called will call initilize twice. Not sure if it's in jQuery or my code. This stops the infinite loop that occurs after this bug.
 	try {
-		GameSpace.initialize();
+		GameSpace.preInitialize();
+		GameSpace.finalInitialize();
 	}
 	catch(err) {
 		console.log("initialize failed");

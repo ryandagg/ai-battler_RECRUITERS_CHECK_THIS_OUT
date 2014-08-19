@@ -4,6 +4,9 @@ var passport = require('passport');
 // We also will be using our User model
 var User = require('../models/user');
 
+// fs to create default ai team
+var fs = require('fs');
+
 
 /**
  * A utility function (since we'll use it a couple times)
@@ -88,11 +91,16 @@ var authenticationController = {
     // work regardless of how the data is sent (post, get).
     // It is safer to send as post, however, because the actual data won't
     // show up in browser history.
+    var file = fs.readFileSync('models/default-ai.js', 'utf-8');
+    
     var user = new User({
       username: req.param('username'),
       password: req.param('password'),
-      email: req.param('email')
-    });
+      email: req.param('email'),
+      team: file
+    
+    })
+
 
     // Now that the user is created, we'll attempt to save them to the
     // database.

@@ -14,16 +14,21 @@ body {
 }
 
 #main-wrapper{
-	margin: 0 auto;
+	/*margin: 0 auto;*/
 	float: none;
 	display: block;
 }
 
 /*this is not working to center at all.*/
 #game-window {
-	float: left;
+	/*float: left;
 	text-align: center;
-	vertical-align: middle;
+	vertical-align: middle;*/
+	width: 100%;
+}
+
+#game-table{
+	margin: auto;
 }
 
 #HUD {
@@ -68,13 +73,37 @@ td {
 	overflow: hidden;
 }
 
-.character {
+.rogue {
 	/*color: #0066FF;*/
 	background-color: #5CBF45;
 	background-image: url('../assets/PlanetCutePNG/CharacterCatGirl.png');
 	background-size: 103% 135%;
 	background-repeat: no-repeat;
 	background-position: 0% 100%;
+}
+
+.warrior{
+	/*background-color: #5CBF45;*/
+	background-image: url('../assets/PlanetCutePNG/CharacterBoy.png');
+	background-size: 103% 135%;
+	background-repeat: no-repeat;
+	background-position: 0% 100%;
+}
+
+.priest{
+	/*background-color: #5CBF45;*/
+	background-image: url('../assets/PlanetCutePNG/CharacterPrincessGirl.png');
+	background-size: 103% 135%;
+	background-repeat: no-repeat;
+	background-position: 0% 100%;
+}
+
+.team1 {
+	background-color: #FF47D1;
+}
+
+.team2 {
+	background-color: #19A3FF;
 }
 
 .gold {
@@ -155,7 +184,8 @@ td {
 	background-color: white;
 }
 
-.hidden {
-	background-color: #333;
-	color: #333;
+.hideTiles {
+	background-color: #A0815F;
+	color: #A0815F;
+	background-image: none;
 }

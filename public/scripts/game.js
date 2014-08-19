@@ -1,4 +1,6 @@
 /* Guidelines from Raine:
+
+
 -all functions as methods
 -don't make children responsible for parents 
 -if a funciton is passed a single type of object it should probably be made a method under the class of that object type
@@ -58,21 +60,21 @@ var GameSpace = (function() {
 		// console.log("state-func:", state);
 	}
 
-	// image object
-	var Image = function(height, width, filePath) {
-		this.height = height;
-		this.width = width;
-		this.filePath = filePath;
-		this.centerX = width/2;
-		this.centerY = height/2;
-	}
+	// // image object
+	// var Image = function(height, width, filePath) {
+	// 	this.height = height;
+	// 	this.width = width;
+	// 	this.filePath = filePath;
+	// 	this.centerX = width/2;
+	// 	this.centerY = height/2;
+	// }
 
-	var imageList = {
-		dirtFloor: new Image(171, 101, '../assets/PlanetCutePNG/DirtBlock.png'),
-		wall: new Image(171, 101, '../assets/PlanetCutePNG/WallBlock.png'),
-		catGirl: new Image(171, 101, '../assets/PlanetCutePNG/CharacterCatGirl.png'),
-		doorClosed: new Image(171, 101, '../assets/PlanetCutePNG/DoorTallClosed.png'),
-	}
+	// var imageList = {
+	// 	dirtFloor: new Image(171, 101, '../assets/PlanetCutePNG/DirtBlock.png'),
+	// 	wall: new Image(171, 101, '../assets/PlanetCutePNG/WallBlock.png'),
+	// 	catGirl: new Image(171, 101, '../assets/PlanetCutePNG/CharacterCatGirl.png'),
+	// 	doorClosed: new Image(171, 101, '../assets/PlanetCutePNG/DoorTallClosed.png'),
+	// }
 
 	// utility functions for resizing tiles upon window load & resize
 	var resizeTiles = function(num) {
@@ -81,18 +83,20 @@ var GameSpace = (function() {
 		var winWidth = $(window).width() * num;
 		$(".tile").width(winWidth / currentLevel.columns);
 		$(".tile").height(winHeight / currentLevel.rows);
-		// this is having no effect because main wrapper is smaller than the divs it contains after resizing...
-		$('#main-wrapper').css({
-			"margin": '0 auto',
-			"float": 'none',
-			"display": 'block'
-		})
-		// $(".tile img").width(winWidth / currentLevel.columns);
-		// $(".tile img").height(winHeight / currentLevel.rows);
-		// $(".tile").css('background-size', '100%');
-	}
+	};
+	// used to see the current map for ai use.
+	var getMap = function(){
+		return currentLevel.map;
+	};
 
-	// always called with resizeTiles to change font size
+	// Used to find empty space for each team.
+	var getTeamSpace = function(){
+		console.log("currentLevel:;", currentLevel);
+		return currentLevel.findTeamSpace();
+	};
+
+	// NOT currently doing anything since display was changed from ASCII to images.
+	// Always called with resizeTiles to change font size.
 	var resizeFont = function(num) {
 		// Set font size to scale with square height
 		$('.scale-font').css('font-size', $('.tile').height()*1.05);
@@ -266,6 +270,7 @@ var GameSpace = (function() {
 		// console.log(this.map);
 	};
 
+	// CurrentLevel.map is also a room and can be used.
 	Level.prototype.eachTileInRoom = function(room, func) {
 		for(var y = room.upLeftCornerY + 1; y < room.height + room.upLeftCornerY -1; y++) {
 			for(var x = room.upLeftCornerX + 1; x < room.width + room.upLeftCornerX -1; x++) {
@@ -372,11 +377,11 @@ var GameSpace = (function() {
 			// console.log(arguments);
 			if(trueFalse) {
 				// console.log(pos([x, y]));
-				$(pos([x, y])).removeClass("hidden");
+				$(pos([x, y])).removeClass("hideTiles");
 			}
 			else {
 				// console.log('something');
-				$(pos([x, y])).addClass("hidden");
+				$(pos([x, y])).addClass("hideTiles");
 			}
 		})
 	}
@@ -541,6 +546,46 @@ var GameSpace = (function() {
 		return [randomX, randomY];
 
 	}
+	Level.prototype.findTeamSpace = function(){
+		var randomX = Math.floor(Math.random() * (state.mapColumns - 2)) + 1;
+		var randomY = Math.floor(Math.random() * (state.mapRows - 2)) + 1;
+		if(
+			this.map[randomY][randomX].class !== 'dot' ||
+			this.map[randomY + 1][randomX].class !== 'dot' ||
+			this.map[randomY - 1][randomX].class !== 'dot'
+			){
+			return this.createTeam(str);
+		}
+		
+		return [randomX, randomY];
+	}
+
+	Level.prototype.createTeam = function(str){
+		var randomX = Math.floor(Math.random() * (state.mapColumns - 2)) + 1;
+		var randomY = Math.floor(Math.random() * (state.mapRows - 2)) + 1;
+		if(
+			this.map[randomY][randomX].class !== 'dot' ||
+			this.map[randomY + 1][randomX].class !== 'dot' ||
+			this.map[randomY - 1][randomX].class !== 'dot'
+			){
+			return this.createTeam(str);
+		}
+		var team = new Squad(randomX, randomY);
+		// console.log("team:", team)
+		this.placeTeam(team, str);
+		return team;
+	}
+
+	// Used in aiPvp to place each team. 
+	// How do I want to do this? Random map choice
+	Level.prototype.placeTeam = function(team, str){
+		// console.log("team:", team)
+		for(var key in team){
+			// console.log("team.key:", team.key)
+			team[key].class += ' ' + str;
+			this.map[team[key].y][team[key].x] = team[key];
+		}
+	}
 
 	// called on initial level creation and when moving down stairs
 	Level.prototype.placeCharacterStairs = function(upDown) {
@@ -561,7 +606,9 @@ var GameSpace = (function() {
 			rogue.standingOn = new Tile(rogue.x, rogue.y);
 		}
 	};
-	// Currently works on doors and dots. Could potentially handle items and stairs with conditional statements.
+
+
+	// Updates the display from the map after every actor moves.
 	Level.prototype.updateDisplay = function(obj1, obj2) {
 		// console.log("updateDisplay obj2", obj2);
 		// $(pos(obj1.location())).text(obj1.text);
@@ -664,10 +711,10 @@ var GameSpace = (function() {
 			this.createMap();
 			this.createTerrain();
 			// called by placeCharacter
-			this.placeCharacterStairs(upDown);
 			// places stairs goind opposite direction of stairs under rogue.
 			console.log("state.type:", state.type)
 			if(state.type === 'solo'){
+				this.placeCharacterStairs(upDown);
 				if(upDown === 'down') {
 					this.placeStairs("up");
 				}
@@ -675,12 +722,14 @@ var GameSpace = (function() {
 					this.placeStairs("down");
 				}
 			}
+			else if(state.type === 'aiPvp'){
+				team1 = this.createTeam('team1');
+				team2 = this.createTeam('team2');
+			}
 			// // the line below is used for texting new items & inventory
 			// this.map[rogue.y + 1][rogue.x + 1] = new Dagger(1, 1);
 			this.createMonsters(state.MonstersPerLevel);
-			this.drawMap();
-			this.lightRoomRogueIn(this.roomList);
-			this.darkenRooms(this.roomList);
+			
 		}
 // Room object used during random map generation.
 	var Room = function(xCenter, yCenter, width, height, doorLocationX, doorLocationY) {
@@ -993,7 +1042,7 @@ var GameSpace = (function() {
 	Character.prototype.directionalMovementHandler = function(horz, vert) {
 		// console.log("horz: ", horz, " vert: ", vert);
 		var nextTile = currentLevel.map[this.y + vert][this.x + horz];
-		console.log("nextTile:", nextTile)
+		// console.log("nextTile:", nextTile);
 		if(nextTile.impassable && this.tunneling) {
 				for(var i = 0; i < 20; i++) {
 					turnHandler();
@@ -1176,7 +1225,7 @@ var GameSpace = (function() {
 		Character.call(this, x, y);
 		this.text = "@";
 		this.image = 'catGirl'
-		this.class = "character";
+		this.class = "rogue";
 		this.inspectText = "A badass MFer.";
 		this.inventoryOpen = false;
 		this.inventoryFocus = null;
@@ -1196,6 +1245,65 @@ var GameSpace = (function() {
 
 	Rogue.prototype = new Character();
 	Rogue.prototype.constructor = Rogue;
+
+	var Warrior = function(x, y) {
+		// Tile.call(this, x, y);
+		Character.call(this, x, y);
+		this.text = "@";
+		// this.image = 'catGirl'
+		this.class = "warrior";
+		this.inspectText = "A badass MFer.";
+		this.inventoryOpen = false;
+		this.inventoryFocus = null;
+		this.tunneling = false;
+
+		// combat stats
+		this.maxHealth = this.healthBase;
+		this.health = this.maxHealth;
+		this.offense = this.offenseBase;
+		this.defense = this.defenseBase;
+		this.maxDamage = this.maxDamageBase;
+
+		// inventory
+		this.inventory.a = new Sword(x, y, false);
+		this.inventory.b = new LeatherArmor(x, y, false);
+	}
+
+	Warrior.prototype = new Character();
+	Warrior.prototype.constructor = Warrior;
+
+	var Priest = function(x, y) {
+		// Tile.call(this, x, y);
+		Character.call(this, x, y);
+		this.text = "@";
+		// this.image = 'catGirl'
+		this.class = "priest";
+		this.inspectText = "A badass healer.";
+		this.inventoryOpen = false;
+		this.inventoryFocus = null;
+		this.tunneling = false;
+
+		// combat stats
+		this.maxHealth = this.healthBase;
+		this.health = this.maxHealth;
+		this.offense = this.offenseBase;
+		this.defense = this.defenseBase;
+		this.maxDamage = this.maxDamageBase;
+
+		// inventory
+		this.inventory.a = new Dagger(x, y, false);
+		this.inventory.b = new ChainMail(x, y, false);
+	}
+
+	Priest.prototype = new Character();
+	Priest.prototype.constructor = Priest;
+
+	// Squad class for pvp. Generally referred to as a team, but called Squad here so that player ai does not override this class.
+	var Squad = function(centerX, centerY) {
+		this.warrior = new Warrior(centerX, centerY);
+		this.priest = new Priest(centerX, centerY + 1);
+		this.rogue = new Rogue(centerX, centerY - 1);
+	}
 
 // monster related code
 	var Monster = function(x, y) {
@@ -1370,6 +1478,20 @@ var GameSpace = (function() {
 
 	LeatherArmor.prototype = new Armor();
 	LeatherArmor.prototype.constructor = LeatherArmor;
+
+	var ChainMail = function(x, y, equipped) {
+		Armor.call(this, x, y, equipped);
+		this.x = x;
+		this.y = y;
+		this.label = "Chain Mail"
+
+		// combat stuff
+		this.defenseMod = 4;
+	}
+
+	ChainMail.prototype = new Armor();
+	ChainMail.prototype.constructor = ChainMail;
+
 // gold
 
 	var Gold = function(x, y, quantity) {
@@ -1411,7 +1533,18 @@ var GameSpace = (function() {
 	var currentLevel = null;
 	// var currentLevel = new Level(state.mapColumns, state.mapRows, 0);
 	// var rogue = null;
+	// if(state.type === 'solo'){
+	// 	var rogue = new Rogue(1, 1);
+	// }
+	// else if(state.type === 'aiPvp'){
+	// 	var team1 = currentLevel.createTeam();
+	// 	var team2 = currentLevel.createTeam();
+	// 	console.log("team1:", team1)
+	// }
 	var rogue = new Rogue(1, 1);
+	var team1 = null;
+	var team2 = null;
+	// console.log("team1:", team1)
 	var monstersActive = [];
 	var monstersAvailable = []
 	var totalTurns = 0;
@@ -1420,39 +1553,44 @@ var GameSpace = (function() {
 	    dontCrossCorners: false
 	});
 
-	var initialize = function() {
-		console.log("initialize called");
-		// create local 'globals'
+	// Creates map, but does not draw it.
+	var preInitialize = function() {
+		console.log("preInitialize called");
+
 		currentLevel = new Level(state.mapColumns, state.mapRows, 0);
-		// console.log("currentLevel:", currentLevel)
-		// rogue = new Character(1, 1);
-		// console.log("rogue:", rogue)
-		// var monstersActive = [];
-		// var monstersAvailable = [];
-		// var totalTurns = 0;
 		var pathFinder = new PF.AStarFinder({
 		    allowDiagonal: true,
 		    dontCrossCorners: false
 		});
 		currentLevel.initializeMap("up");
 		rogue.equipStartingEquipment();
-		rogue.drawInventory();
+		// TODO add list to equip characters
 		
 	}
 
+
+	var finalInitialize = function(){
+		console.log("finalInitialize called");
+		rogue.drawInventory();
+		currentLevel.drawMap();
+		currentLevel.lightRoomRogueIn(currentLevel.roomList);
+		currentLevel.darkenRooms(currentLevel.roomList);
+	}
+
 	return {
-		// only returning these for debugging, no need in actual game.
-		GameSpace: GameSpace,
+		// // only returning these for debugging, no need in actual game.
 		state: state,
 
 		// actually must be returned for game to work.
+		getMap: getMap,
 		clickText: clickText,
-		currentLevel: currentLevel,
 		resizeTiles: resizeTiles,
 		resizeFont: resizeFont,
 		updateState: updateState,
 		rogue: rogue,
-		initialize: initialize,
+		preInitialize: preInitialize,
+		finalInitialize: finalInitialize,
+		getTeamSpace: getTeamSpace
 
 	}
 })();
