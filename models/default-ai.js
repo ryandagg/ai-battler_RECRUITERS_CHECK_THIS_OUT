@@ -3,14 +3,14 @@
 var Team = function(x, y, name) {
 	// Do not modify the next 2 lines as they are needed for the game to run correctly.
 	this.name = name;
-	Squad.call(this, x, y);
-	
+	GameSpace.Squad.call(this, x, y);
+
 	// The order in this array determines the order that you characters move for the match.
     this.turnOrder = ['warrior', 'rogue', 'priest'];
 };
 
 // Do not modify the next 2 lines as they are needed for the game to run correctly.
-Team.prototype = new Squad();
+Team.prototype = new GameSpace.Squad();
 Team.prototype.constructor = Team;
 
 

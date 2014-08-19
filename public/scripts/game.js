@@ -55,26 +55,10 @@ var GameSpace = (function() {
 			state.roomsQuantity = 0;
 			state.roomMinDimension = 0;
 			state.roomMaxDimension = 0;
-			state.MonstersPerLevel = 1;
+			state.MonstersPerLevel = 0;
 		}
 		// console.log("state-func:", state);
 	}
-
-	// // image object
-	// var Image = function(height, width, filePath) {
-	// 	this.height = height;
-	// 	this.width = width;
-	// 	this.filePath = filePath;
-	// 	this.centerX = width/2;
-	// 	this.centerY = height/2;
-	// }
-
-	// var imageList = {
-	// 	dirtFloor: new Image(171, 101, '../assets/PlanetCutePNG/DirtBlock.png'),
-	// 	wall: new Image(171, 101, '../assets/PlanetCutePNG/WallBlock.png'),
-	// 	catGirl: new Image(171, 101, '../assets/PlanetCutePNG/CharacterCatGirl.png'),
-	// 	doorClosed: new Image(171, 101, '../assets/PlanetCutePNG/DoorTallClosed.png'),
-	// }
 
 	// utility functions for resizing tiles upon window load & resize
 	var resizeTiles = function(num) {
@@ -91,9 +75,15 @@ var GameSpace = (function() {
 
 	// Used to find empty space for each team.
 	var getTeamSpace = function(){
-		console.log("currentLevel:;", currentLevel);
+		// console.log("currentLevel:;", currentLevel);
 		return currentLevel.findTeamSpace();
 	};
+
+	var putTeamOnMap = function(team, str){
+		// console.log("currentLevel:", currentLevel)
+		// console.log("team:", team)
+		currentLevel.placeTeam(team, str);
+	}
 
 	// NOT currently doing anything since display was changed from ASCII to images.
 	// Always called with resizeTiles to change font size.
@@ -554,36 +544,38 @@ var GameSpace = (function() {
 			this.map[randomY + 1][randomX].class !== 'dot' ||
 			this.map[randomY - 1][randomX].class !== 'dot'
 			){
-			return this.createTeam(str);
+			return this.findTeamSpace();
 		}
 		
 		return [randomX, randomY];
 	}
 
-	Level.prototype.createTeam = function(str){
-		var randomX = Math.floor(Math.random() * (state.mapColumns - 2)) + 1;
-		var randomY = Math.floor(Math.random() * (state.mapRows - 2)) + 1;
-		if(
-			this.map[randomY][randomX].class !== 'dot' ||
-			this.map[randomY + 1][randomX].class !== 'dot' ||
-			this.map[randomY - 1][randomX].class !== 'dot'
-			){
-			return this.createTeam(str);
-		}
-		var team = new Squad(randomX, randomY);
-		// console.log("team:", team)
-		this.placeTeam(team, str);
-		return team;
-	}
+	// Level.prototype.createTeam = function(str){
+	// 	var randomX = Math.floor(Math.random() * (state.mapColumns - 2)) + 1;
+	// 	var randomY = Math.floor(Math.random() * (state.mapRows - 2)) + 1;
+	// 	if(
+	// 		this.map[randomY][randomX].class !== 'dot' ||
+	// 		this.map[randomY + 1][randomX].class !== 'dot' ||
+	// 		this.map[randomY - 1][randomX].class !== 'dot'
+	// 		){
+	// 		return this.createTeam(str);
+	// 	}
+	// 	var team = new Squad(randomX, randomY);
+	// 	// console.log("team:", team)
+	// 	this.placeTeam(team, str);
+	// 	return team;
+	// }
 
 	// Used in aiPvp to place each team. 
 	// How do I want to do this? Random map choice
 	Level.prototype.placeTeam = function(team, str){
-		// console.log("team:", team)
+		console.log("team:", team)
 		for(var key in team){
 			// console.log("team.key:", team.key)
-			team[key].class += ' ' + str;
-			this.map[team[key].y][team[key].x] = team[key];
+			if(team[key].y){
+				team[key].class += ' ' + str;
+				this.map[team[key].y][team[key].x] = team[key];
+			}
 		}
 	}
 
@@ -722,10 +714,10 @@ var GameSpace = (function() {
 					this.placeStairs("down");
 				}
 			}
-			else if(state.type === 'aiPvp'){
-				team1 = this.createTeam('team1');
-				team2 = this.createTeam('team2');
-			}
+			// else if(state.type === 'aiPvp'){
+			// 	team1 = this.createTeam('team1');
+			// 	team2 = this.createTeam('team2');
+			// }
 			// // the line below is used for texting new items & inventory
 			// this.map[rogue.y + 1][rogue.x + 1] = new Dagger(1, 1);
 			this.createMonsters(state.MonstersPerLevel);
@@ -1590,7 +1582,11 @@ var GameSpace = (function() {
 		rogue: rogue,
 		preInitialize: preInitialize,
 		finalInitialize: finalInitialize,
-		getTeamSpace: getTeamSpace
+		getTeamSpace: getTeamSpace,
+		team1: team1,
+		team2: team2,
+		putTeamOnMap: putTeamOnMap,
+		Squad: Squad
 
 	}
 })();
