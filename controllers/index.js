@@ -8,10 +8,11 @@ var indexController = {
 	},
 
 	randomBattle: function(req, res) {
-		User.find({username: 'joe'}, function(err, user){
+		User.findOne({username: 'joe'}, function(err, userObj){
+			// console.log("userObj[0].team:", userObj[0].team)
 			res.render('random-battle', {
 				aiCode1: req.user.team,
-				aiCode2: user.team
+				aiCode2: userObj.team
 			});
 		})
 	},
