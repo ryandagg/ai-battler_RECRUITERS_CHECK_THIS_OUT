@@ -4,7 +4,10 @@ $(document).on('ready', function() {
 	count++;
 	if(count < 2){
 		// console.log("count:", count);
-		
+		coordinates = GameSpace.getTeamSpace();
+		// console.log("coordinates:", coordinates);
+		GameSpace.team2 = new Team(coordinates[0], coordinates[1], 'team2');
+		GameSpace.putTeamOnMap(GameSpace.team2, 'team2');
 		// GameSpace.initialize();
 		// there is some strange bug where an error occuring after intitialize is called will call jQuery onReady twice. Not sure if it's in jQuery or my code. This stops the infinite loop that occurs after this bug.
 		// console.log("called once?:")

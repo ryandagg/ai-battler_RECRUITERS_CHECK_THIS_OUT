@@ -8,9 +8,12 @@ var indexController = {
 	},
 
 	randomBattle: function(req, res) {
-		res.render('random-battle', {
-			aiCode: req.user.team
-		});
+		User.find({username: 'joe'}, function(err, user){
+			res.render('random-battle', {
+				aiCode1: req.user.team,
+				aiCode2: user.team
+			});
+		})
 	},
 
 	solo: function(req, res) {
