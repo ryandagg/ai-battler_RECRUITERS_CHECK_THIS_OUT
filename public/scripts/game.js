@@ -1110,9 +1110,12 @@ var GameSpace = (function() {
 				// setTimeout(aiPvpTurnHandler, TIMER_INTERVAL);
 			}
 		}
-		else if(nextTile instanceof Monster || nextTile instanceof Character) {
+		else if(nextTile instanceof Monster) {
 			this.combatHandler(currentLevel.map[this.y + vert][this.x + horz]);
 			turnHandler();
+		}
+		else if (nextTile instanceof Character && state.type === 'aiPvp'){
+			this.combatHandler(currentLevel.map[this.y + vert][this.x + horz]);		
 		}
 		else if(nextTile instanceof Door) {
 			currentLevel.emptyTile(this.x + horz, this.y + vert);
@@ -1121,10 +1124,10 @@ var GameSpace = (function() {
 			addMessage("You kick down the door. A loud noise reverberates throughout the dungeon.")
 			turnHandler();
 		}
-		// // what does this do?
-		// else if(nextTile instanceof Character) {
-		// 	turnHandler();
-		// }
+		// Handles resting. Rogue attacks itself without it.
+		else if(nextTile instanceof Character && state.type === 'solo') {
+			turnHandler();
+		}
 		else if(nextTile instanceof Gold) {
 			this.gold += currentLevel.map[this.y + vert][this.x + horz].quantity;
 			currentLevel.map[this.y + vert][this.x + horz] = new Tile(this.x + horz, this.y + vert);
@@ -1298,6 +1301,7 @@ var GameSpace = (function() {
 		// inventory
 		this.inventory.a = new Dagger(x, y, false);
 		this.inventory.b = new LeatherArmor(x, y, false);
+		this.inventory.c = new HealingStaff(x, y);
 	}
 
 	Rogue.prototype = new Character();
@@ -1564,18 +1568,43 @@ var GameSpace = (function() {
 	var Staff = function(x, y){
 		Item.call(this, x, y);
 		this.charges = 4;
+		this.class = 'staff';
 	}
 	Staff.prototype = new Item();
 	Staff.prototype.constructor = Staff;
 
+	Staff.prototype.toString = function() {
+	    return this.label + ", " + this.charges + " charges";
+	}
+
+	Staff.prototype.useStaff = function(horz, vert){
+		if(Math.abs(horz) > this.range || Math.abs(horz) > this.range){
+			addMessage("Target is out of range.")
+		}
+		else if(this.charges < 1){
+			addMessage("The staff is out of charges.")
+		}
+		else{
+			this.effect(target);
+			this.charges -= 1;
+		}
+	}
+
 	var HealingStaff = function(x, y){
 		Staff.call(this, x, y);
 		this.range = 1;
+		this.effect = function(horz, vert){
+			target.health *= 1.333
+		}
+		this.label = 'Staff of Healing'
 	}
+
 	HealingStaff.prototype = new Staff();
 	HealingStaff.prototype.constructor = HealingStaff;
 
-	HealingStaff.prototype.
+	HealingStaff.prototype.use = function(target){
+
+	}
 
 // everything else
 	// // create local 'globals'
