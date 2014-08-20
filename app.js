@@ -23,17 +23,11 @@ var authenticationController = require('./controllers/authentication');
 var indexController = require('./controllers/index.js');
 
 // Connect to the database
-// mongoose.connect('mongodb://localhost/aiBattle');
 var mongoUri = process.env.MONGOLAB_URI ||
   process.env.MONGOHQ_URL ||
   'mongodb://localhost/aiBattle';
+mongoose.connect(mongoUri);
 
-mongo.Db.connect(mongoUri, function (err, db) {
-  db.collection('mydocs', function(er, collection) {
-    collection.insert({'mykey': 'myvalue'}, {safe: true}, function(er,rs) {
-    });
-  });
-});
 var app = express();
 
 app.set('view engine', 'jade');
@@ -47,7 +41,11 @@ app.use(cookieParser());
 app.use(flash());
 
 // Initialize the express session. Needs to be given a secret property
-app.use(session({secret: 'secret'}));
+app.use(session({
+	secret: 'secret',
+	saveUnitialized: true,
+	resave: true
+	}));
 
 // Hook in passport to the middleware chain
 app.use(passport.initialize());
