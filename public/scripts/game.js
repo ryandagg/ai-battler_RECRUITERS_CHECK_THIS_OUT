@@ -264,7 +264,7 @@ var GameSpace = (function() {
 
 		// rogue.drawInventory(); // this does not appear to be needed here.
 		totalTurns++;
-		addMessage("----------- Turn " + totalTurns + " -----------");
+		addMessage("--------- Turn " + totalTurns + " ---------");
 	}
 
 	var pvpTurnOrder = [];
