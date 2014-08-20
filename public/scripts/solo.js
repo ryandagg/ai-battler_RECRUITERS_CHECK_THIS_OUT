@@ -31,12 +31,12 @@ $(document).on('ready', function() {
 	})
 
 	// change tile & text on ready
-	GameSpace.resizeTiles(.75);
-	GameSpace.resizeFont(.75);
+	GameSpace.resizeTiles(.80);
+	GameSpace.resizeFont(.80);
 
 	// change map size on resize
 	$(window).resize(function() {
-		GameSpace.resizeTiles(.75);
-		GameSpace.resizeFont(.75);
+		GameSpace.resizeTiles(.80);
+		// GameSpace.resizeFont(.95);
 	});
 });

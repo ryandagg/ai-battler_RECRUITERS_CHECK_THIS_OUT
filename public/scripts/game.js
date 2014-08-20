@@ -147,7 +147,13 @@ var GameSpace = (function() {
 	// utility functions for resizing tiles upon window load & resize
 	var resizeTiles = function(num) {
 		// var winSize = Math.min($(window).width(), $(window).height()) * 0.85;
-		var winHeight = $(window).height() * num;
+		if(state.type === 'solo'){
+			var winHeight = $(window).height() * num * 1.07;
+
+		}
+		else {
+			var winHeight = $(window).height() * num;
+		}
 		var winWidth = $(window).width() * num;
 		// These are 'globals' so that they can be used by attack animations.
 		tileHeight = winHeight / currentLevel.rows;
