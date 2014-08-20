@@ -31,7 +31,7 @@ var GameSpace = (function() {
 		type: 'solo',
 		mapColumns: 30,
 		mapRows: 25,
-		roomsQuantity: 20,
+		roomsQuantity: 19,
 		roomMinDimension: 4,
 		roomMaxDimension: 6,
 		MonstersPerLevel: 12
@@ -56,7 +56,7 @@ var GameSpace = (function() {
 	var targetId = null;
 	var tileWidth = null;
 	var tileHeight = null;
-	var daggerHtml = '<img class="dagger" src="assets/dagger.png">';
+	var daggerHtml = '<img class="dagger" src="assets/dagger1.png">';
 	var animateDaggerThrust = function(left, top, angle, targetId){
 		$(targetId).append(daggerHtml);
 		$(targetId + ' .dagger').css({
@@ -64,47 +64,74 @@ var GameSpace = (function() {
 			'left': 0,
 			'width': tileWidth*1.5,
 			'height': tileHeight*1.5,
+			'-webkit-transform': 'rotate(' + angle + ')',
+			// 'webkit-transform-origin': '0% 25%',
+			'transform': 'rotate(' + angle + ')',
+			// 'transform-origin': '0% 25%',
 		})
 		animation = TweenLite.to(
 			$(targetId + ' .dagger'), 
-			TIMER_INTERVAL*2/100, 
+			TIMER_INTERVAL*2/1000, 
 			{css:{
-				'left': String(tileWidth), 
-				'top': String(tileHeight)
+				'left': left, 
+				'top': top
 			}}
 		);
 		var daggerTimeline = new TimelineLite();
 		daggerTimeline.add(animation);
 		daggerTimeline.play();
+		setTimeout(function(){$(targetId + ' .dagger').remove()}, TIMER_INTERVAL*2 - 10)
 
 	}
-	var getAngle = function(horz, vert){
-		if(horz === 1){
-			if(horz === 0 && vert === -1){
-				return '0deg';
-			}
-			else if(horz === 1 && vert === -1){
-				return '45deg';
-			}
-			else if(horz === 1 && vert === 0){
-				return '90deg';
-			}
-			else if(horz === 1 && vert === 1){
-				return '135deg';
-			}
-			else if(horz === 0 && vert === 1){
-				return '180deg';
-			}
-			else if(horz === -1 && vert === 1){
-				return '225deg';
-			}
-			else if(horz === -1 && vert === 0){
-				return '270deg';
-			}
-			else if(horz === -1 && vert === -1){
-				return '315deg';
-			}
+
+	// Used to calculate angle and directional movement for greensock animations of weapon attack.
+	var getAngleDirection = function(horz, vert){
+		var degrees = null;
+		var top = null;
+		var left = null;
+		if(horz === 0 && vert === -1){
+			degrees = '0deg';
+			top = -tileHeight*0.8;
+			left = 0;
 		}
+		else if(horz === 1 && vert === -1){
+			degrees = '45deg';
+			top = -tileHeight*0.8;
+			left = tileWidth*0.8;
+		}
+		else if(horz === 1 && vert === 0){
+			degrees = '90deg';
+			top = 0;
+			left = tileWidth*0.8;
+		}
+		else if(horz === 1 && vert === 1){
+			degrees = '135deg';
+			top = tileHeight*0.8;
+			left = tileWidth*0.8;
+		}
+		else if(horz === 0 && vert === 1){
+			degrees = '180deg';
+			top = tileHeight*0.8;
+			left = 0;
+		}
+		else if(horz === -1 && vert === 1){
+			degrees = '225deg';
+			top = tileHeight*0.8;
+			left = -tileWidth*0.8;
+		}
+		else if(horz === -1 && vert === 0){
+			degrees = '270deg';
+			top = 0;
+			left = -tileWidth*0.8;
+		}
+		else if(horz === -1 && vert === -1){
+			degrees = '315deg';
+			top = -tileHeight*0.8;
+			left = -tileWidth*0.8;
+		}
+	
+		// console.log("degrees, left, top:", degrees, left, top);
+		return [degrees, left, top]
 	}
 
 	// var daggerTimeline = new TimelineLight({paused: true});
@@ -941,7 +968,7 @@ var GameSpace = (function() {
 		this.standingOn = new Tile(x, y);
 
 		// combat stats
-		this.healthBase = 100;
+		this.healthBase = 50;
 		this.offenseBase = 10;
 		this.maxDamageBase = 10;
 		this.defenseBase = 10;
@@ -1188,20 +1215,6 @@ var GameSpace = (function() {
 
 	Character.prototype.nextTo = function(squad, characterClass){
 		var targetObj = this.findCharacter(squad, characterClass);
-		// var targetObj = currentLevel.map[target[1]][target[0]];
-		// var path = this.getPath(targetObj);
-		// if(path.length === 2) {
-		// 	return path[1];
-		// }
-		// return false;
-		// for(var y = this.y - 1; y <= this.y + 1; y++){
-		// 	for(var x = this.x - 1; x <= this.x + 1; x++){
-		// 		if(currentLevel.map[y][x] === targetObj){
-		// 			var horz = targetObj.x
-		// 			return [x, y]
-		// 		}
-		// 	}
-		// }
 		if(Math.abs(targetObj.x - this.x) <= 1 && Math.abs(targetObj.y - this.y) <= 1){
 			console.log("[targetObj.x - this.x, targetObj.y - this.y]:", [targetObj.x - this.x, targetObj.y - this.y])
 			return [targetObj.x - this.x, targetObj.y - this.y]
@@ -1273,17 +1286,17 @@ var GameSpace = (function() {
 		}
 		else if(nextTile instanceof Monster) {
 			this.combatHandler(currentLevel.map[this.y + vert][this.x + horz]);
-			var targetId = pos([this.x + horz, this.y + vert]);
-			var angle = getAngle(horz, vert);
-			animateDaggerThrust(tileWidth, tileHeight, angle, targetId)
+			var targetId = pos([this.x, this.y]);
+			var angleDirection = getAngleDirection(horz, vert);
+			animateDaggerThrust(angleDirection[1], angleDirection[2], angleDirection[0], targetId)
 			
 			turnHandler();
 		}
 		else if (nextTile instanceof Character && state.type === 'aiPvp'){
 			this.combatHandler(currentLevel.map[this.y + vert][this.x + horz]);	
-			var targetId = pos([this.x + horz, this.y + vert]);
-			var angle = getAngle(horz, vert);
-			animateDaggerThrust(tileWidth, tileHeight, angle, targetId)	
+			var targetId = pos([this.x, this.y]);
+			var angleDirection = getAngleDirection(horz, vert);
+			animateDaggerThrust(angleDirection[1], angleDirection[2], angleDirection[0], targetId)	
 		}
 		else if(nextTile instanceof Door) {
 			currentLevel.emptyTile(this.x + horz, this.y + vert);
@@ -1557,7 +1570,7 @@ var GameSpace = (function() {
 		this.inspectText = "A enormous, mangy rat. It looks hungry."
 
 		// combat stats
-		this.maxHealth = this.healthBase/10;
+		this.maxHealth = this.healthBase/5;
 		this.health = this.maxHealth;
 		this.offense = this.offenseBase;
 		this.defense = this.defenseBase;
@@ -1575,7 +1588,7 @@ var GameSpace = (function() {
 		this.inspectText = "A short, reptilian humanoid. It walks on two legs and wants to stab you."
 
 		// combat stats
-		this.maxHealth = this.healthBase/5;
+		this.maxHealth = this.healthBase/2.5;
 		this.health = this.maxHealth;
 		this.offense = this.offenseBase;
 		this.defense = this.defenseBase/2;

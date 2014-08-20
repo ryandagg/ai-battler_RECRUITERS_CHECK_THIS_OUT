@@ -70,7 +70,7 @@ td {
 
 .tile {
 	position: relative;
-	overflow: hidden;
+	/*overflow: hidden;*/
 }
 
 .rogue {
