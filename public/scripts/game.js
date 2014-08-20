@@ -29,11 +29,11 @@ var GameSpace = (function() {
 	// maintain state between solo play and pvp with ai.
 	var state = {
 		type: 'solo',
-		mapColumns: 30,
+		mapColumns: 20,
 		mapRows: 25,
-		roomsQuantity: 19,
+		roomsQuantity: 14,
 		roomMinDimension: 4,
-		roomMaxDimension: 6,
+		roomMaxDimension: 5,
 		MonstersPerLevel: 12
 	};
 
