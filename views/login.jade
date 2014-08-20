@@ -1,23 +1,46 @@
 extends layout
 
 block content
-  //- Error comes through via the context passed when calling res.render('login', {...})
-  //- You'll see this in controllers/authentication.js
-  //- If the error exists, we'll display it.
-  if error
-    h3= error
+	//- Error comes through via the context passed when calling res.render('login', {...})
+	//- You'll see this in controllers/authentication.js
+	//- If the error exists, we'll display it.
+	if error
+		h3= error
 
-  //- Form for handling existing user logins.
-  h1 Existing Users
-  form(action="/auth/login", method="post")
-    input(type="text", name="username", placeholder="Username")
-    input(type="password", name="password", placeholder="Password")
-    input.btn-sm.btn.btn-primary(type="submit")
+	//- Form for handling existing user logins.
+	h1 Existing Users
 
-  //- Form for allowing new users to register.
-  h1 Register
-  form(action="/auth/signup", method="post")
-    input(type="text", name="username", placeholder="Username")
-    input(type="email", name="email", placeholder="Email")
-    input(type="password", name="password", placeholder="Password")
-    input.btn-sm.btn.btn-primary(type="submit")
+	//- form(action="/auth/login", method="post")
+	//- 	input(type="text", name="username", placeholder="Username")
+	//- 	input(type="password", name="password", placeholder="Password")
+	//- 	input.btn-sm.btn.btn-primary(type="submit")
+
+	form.form-inline(role='form' action="/auth/login", method="post")
+			.form-group
+					label.sr-only(for='exampleInputEmail2') Email address
+					input.form-control(type="text", name="username", placeholder="Username")
+				.form-group
+					label.sr-only(for='exampleInputPassword2') Password
+					input.form-control(type="password", name="password", placeholder="Password")
+				button.btn.btn-primary(type='submit') Log in
+
+	//- Form for allowing new users to register.
+	h1 Register
+	//- form(action="/auth/signup", method="post")
+	//- 	input(type="text", name="username", placeholder="Username")
+	//- 	input(type="email", name="email", placeholder="Email")
+	//- 	input(type="password", name="password", placeholder="Password")
+	//- 	input.btn-sm.btn.btn-primary(type="submit")
+
+	form.form-inline(role='form' action="/auth/signup", method="post")
+			.form-group
+					label.sr-only(for='exampleInputEmail2') Email address
+					input.form-control(type="text", name="username", placeholder="Username")
+				.form-group
+					//- .input-group
+					//- 	.input-group-addon @
+					input.form-control(ttype="email", name="email", placeholder="Email")
+				.form-group
+					label.sr-only(for='exampleInputPassword2') Password
+					input.form-control(type="password", name="password", placeholder="Password")
+				button.btn.btn-primary(type='submit') Sign up

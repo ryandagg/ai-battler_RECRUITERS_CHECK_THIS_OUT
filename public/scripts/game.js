@@ -343,7 +343,7 @@ var GameSpace = (function() {
 		else if(currentTurn[1] === 'team2'){
 			if(currentTurn[0] === 'rogue' && team2.rogue.health > 0){
 				try {
-					team1.turnRogue(currentLevel, team2.rogue);
+					team2.turnRogue(currentLevel, team2.rogue);
 				}
 				catch(err) {
 					console.log("team2 rogue turn failed");
@@ -354,7 +354,7 @@ var GameSpace = (function() {
 			}
 			else if(currentTurn[0] === 'priest' && team2.priest.health > 0){
 					try {
-					team1.turnPriest(currentLevel, team2.priest);
+					team2.turnPriest(currentLevel, team2.priest);
 				}
 				catch(err) {
 					console.log("team2 priest turn failed");
@@ -365,7 +365,7 @@ var GameSpace = (function() {
 			}
 			else if(currentTurn[0] === 'warrior' && team2.warrior.health > 0){
 					try {
-					team1.turnWarrior(currentLevel, team2.warrior);
+					team2.turnWarrior(currentLevel, team2.warrior);
 				}
 				catch(err) {
 					console.log("team2 warrior turn failed");
@@ -1522,6 +1522,7 @@ var GameSpace = (function() {
 
 	Character.prototype.moveTo = function(squad, characterClass){
 		var targetObj = this.findCharacter(squad, characterClass);
+		console.log("squad, characterClass from moveTo:", squad, characterClass)
 		// var targetObj = currentLevel.map[target[1]][target[0]];
 		// console.log("target:;", target, currentLevel.map[target[1]][target[0]]);
 
@@ -1869,7 +1870,7 @@ var GameSpace = (function() {
 // Staves
 	var Staff = function(x, y){
 		Item.call(this, x, y);
-		this.charges = 4;
+		this.charges = 10;
 		this.class = 'staff';
 	}
 	Staff.prototype = new Item();

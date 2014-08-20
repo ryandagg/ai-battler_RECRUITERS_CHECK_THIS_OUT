@@ -36,8 +36,9 @@ Team.prototype.turnPriest = function(map, priest) {
 	else if(priest.checkHealthPercent('mine','warrior') < 0.66){
 		// console.log("priest.checkHealthPercent('mine','warrior'):", priest.checkHealthPercent('mine','warrior'))
 		var isNextTo = priest.nextTo('mine', 'warrior');
-		// console.log("isNextTo:", isNextTo);
 		if(!isNextTo){
+			console.log("isNextTo:", isNextTo);
+
 			// console.log("priest.moveTo('mine', 'warrior')")
     		priest.moveTo('mine', 'warrior');
 		}
