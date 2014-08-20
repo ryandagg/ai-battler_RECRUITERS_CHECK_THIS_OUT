@@ -29,12 +29,12 @@ var GameSpace = (function() {
 	// maintain state between solo play and pvp with ai.
 	var state = {
 		type: 'solo',
-		mapColumns: 40,
-		mapRows: 30,
-		roomsQuantity: 32,
+		mapColumns: 30,
+		mapRows: 25,
+		roomsQuantity: 20,
 		roomMinDimension: 4,
 		roomMaxDimension: 6,
-		MonstersPerLevel: 15
+		MonstersPerLevel: 12
 	};
 
 	// function to update state from solo.
@@ -50,14 +50,78 @@ var GameSpace = (function() {
 		}
 		// console.log("state-func:", state);
 	}
+// 'Global' functions to be used throughout app
+
+	// greensock functions to animate various things during combat.
+	var targetId = null;
+	var tileWidth = null;
+	var tileHeight = null;
+	var daggerHtml = '<img class="dagger" src="assets/dagger.png">';
+	var animateDaggerThrust = function(left, top, angle, targetId){
+		$(targetId).append(daggerHtml);
+		$(targetId + ' .dagger').css({
+			'top': 0,
+			'left': 0,
+			'width': tileWidth*1.5,
+			'height': tileHeight*1.5,
+		})
+		animation = TweenLite.to(
+			$(targetId + ' .dagger'), 
+			TIMER_INTERVAL*2/100, 
+			{css:{
+				'left': String(tileWidth), 
+				'top': String(tileHeight)
+			}}
+		);
+		var daggerTimeline = new TimelineLite();
+		daggerTimeline.add(animation);
+		daggerTimeline.play();
+
+	}
+	var getAngle = function(horz, vert){
+		if(horz === 1){
+			if(horz === 0 && vert === -1){
+				return '0deg';
+			}
+			else if(horz === 1 && vert === -1){
+				return '45deg';
+			}
+			else if(horz === 1 && vert === 0){
+				return '90deg';
+			}
+			else if(horz === 1 && vert === 1){
+				return '135deg';
+			}
+			else if(horz === 0 && vert === 1){
+				return '180deg';
+			}
+			else if(horz === -1 && vert === 1){
+				return '225deg';
+			}
+			else if(horz === -1 && vert === 0){
+				return '270deg';
+			}
+			else if(horz === -1 && vert === -1){
+				return '315deg';
+			}
+		}
+	}
+
+	// var daggerTimeline = new TimelineLight({paused: true});
+	// daggerTimeline.add(animateDaggerThrust())
+	// daggerTimeline.play();
 
 	// utility functions for resizing tiles upon window load & resize
 	var resizeTiles = function(num) {
 		// var winSize = Math.min($(window).width(), $(window).height()) * 0.85;
 		var winHeight = $(window).height() * num;
 		var winWidth = $(window).width() * num;
-		$(".tile").width(winWidth / currentLevel.columns);
-		$(".tile").height(winHeight / currentLevel.rows);
+		// These are 'globals' so that they can be used by attack animations.
+		tileHeight = winHeight / currentLevel.rows;
+		tileWidth = winWidth / currentLevel.columns;
+
+		$(".tile").width(tileWidth);
+		$(".tile").height(tileHeight);
 	};
 
 	// NOT currently doing anything since display was changed from ASCII to images.
@@ -1209,10 +1273,17 @@ var GameSpace = (function() {
 		}
 		else if(nextTile instanceof Monster) {
 			this.combatHandler(currentLevel.map[this.y + vert][this.x + horz]);
+			var targetId = pos([this.x + horz, this.y + vert]);
+			var angle = getAngle(horz, vert);
+			animateDaggerThrust(tileWidth, tileHeight, angle, targetId)
+			
 			turnHandler();
 		}
 		else if (nextTile instanceof Character && state.type === 'aiPvp'){
-			this.combatHandler(currentLevel.map[this.y + vert][this.x + horz]);		
+			this.combatHandler(currentLevel.map[this.y + vert][this.x + horz]);	
+			var targetId = pos([this.x + horz, this.y + vert]);
+			var angle = getAngle(horz, vert);
+			animateDaggerThrust(tileWidth, tileHeight, angle, targetId)	
 		}
 		else if(nextTile instanceof Door) {
 			currentLevel.emptyTile(this.x + horz, this.y + vert);

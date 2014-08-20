@@ -177,7 +177,7 @@ td {
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
 	background-color: #5CBF45;
-	
+
 }
 
 .text-popup {
@@ -197,4 +197,11 @@ td {
 	background-color: #A0815F;
 	color: #A0815F;
 	background-image: none;
+}
+
+.dagger {
+	position: absolute;
+	z-index: 2;
+	/*width: 30px;*/
+	/*height: 30px;*/
 }
