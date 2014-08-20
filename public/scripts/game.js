@@ -254,7 +254,7 @@ var GameSpace = (function() {
 		// character regen
 		rogue.regen();
 		// update HP display in HUD after regen
-		$("#hp").text("HP: " + Math.floor(rogue.health));
+		$("#hp").html("<u>HP</>: " + Math.floor(rogue.health));
 
 		// rogue.drawInventory(); // this does not appear to be needed here.
 		totalTurns++;
@@ -280,40 +280,99 @@ var GameSpace = (function() {
 
 	// Handles turns for AI characters.
 	var aiPvpTurnHandler = function() {
+		// team 2 wins
 		if(team1.checkDead()){
 			// end game
 			clearInterval(timer);
 			console.log('team2 wins!')
 			$.post('/gameOver', {winner: OPPONENT_ID, loser: 'currentUser'})
+			$('#game-window').append(
+				"<div id='pvp-ai-popup'>" +
+					"You have lost! You may want create a stronger AI." +
+				"</div>")
+		
 		}
+		// team 1 wins
 		if(team2.checkDead()){
 			// end game
 			clearInterval(timer);
 			console.log('team1 wins!')
 			$.post('/gameOver', {winner: 'currentUser', loser: OPPONENT_ID})
+			$('#game-window').append(
+				"<div id='pvp-ai-popup'>" +
+					"You have won! Click 'Random Battle' in the nav bar to play again." +
+				"</div>")
 		}
 		var currentTurn = pvpTurnOrder[totalTurns % (team1.turnOrder.length + team2.turnOrder.length)];
 		// console.log("currentTurn:", currentTurn)
 		if(currentTurn[1] === 'team1'){
 			if(currentTurn[0] === 'rogue' && team1.rogue.health > 0){
-				team1.turnRogue(currentLevel, team1.rogue);
+				try {
+					team1.turnRogue(currentLevel, team1.rogue);
+				}
+				catch(err) {
+					console.log("team1 rogue turn failed");
+					setTimeout(function() {
+						throw err;
+					},100) 
+				}
 			}
 			else if(currentTurn[0] === 'priest' && team1.priest.health > 0){
-				team1.turnPriest(currentLevel, team1.priest);
+				try {
+					team1.turnPriest(currentLevel, team1.priest);
+				}
+				catch(err) {
+					console.log("team1 priest turn failed");
+					setTimeout(function() {
+						throw err;
+					},100) 
+				}
 			}
 			else if(currentTurn[0] === 'warrior' && team1.warrior.health > 0){
-				team1.turnWarrior(currentLevel, team1.warrior);
+				try {
+					team1.turnWarrior(currentLevel, team1.warrior);
+				}
+				catch(err) {
+					console.log("team1 warrior turn failed");
+					setTimeout(function() {
+						throw err;
+					},100) 
+				}
 			}
 		}
 		else if(currentTurn[1] === 'team2'){
 			if(currentTurn[0] === 'rogue' && team2.rogue.health > 0){
-				team2.turnRogue(currentLevel, team2.rogue);
+				try {
+					team1.turnRogue(currentLevel, team2.rogue);
+				}
+				catch(err) {
+					console.log("team2 rogue turn failed");
+					setTimeout(function() {
+						throw err;
+					},100) 
+				}
 			}
 			else if(currentTurn[0] === 'priest' && team2.priest.health > 0){
-				team2.turnPriest(currentLevel, team2.priest);
+					try {
+					team1.turnPriest(currentLevel, team2.priest);
+				}
+				catch(err) {
+					console.log("team2 priest turn failed");
+					setTimeout(function() {
+						throw err;
+					},100) 
+				}
 			}
 			else if(currentTurn[0] === 'warrior' && team2.warrior.health > 0){
-				team2.turnWarrior(currentLevel, team2.warrior);
+					try {
+					team1.turnWarrior(currentLevel, team2.warrior);
+				}
+				catch(err) {
+					console.log("team2 warrior turn failed");
+					setTimeout(function() {
+						throw err;
+					},100) 
+				}
 			}
 		}
 		// console.log("totalTurns:", totalTurns)
@@ -1111,7 +1170,8 @@ var GameSpace = (function() {
 
 		// inventory
 		this.gold = 0;
-		this.inventory = {a: null, b: null, c: null, d: null, e: null, f: null, g: null, h: null, i: null, j: null, k: null, l: null, m: null, n: null, o: null, p: null, q: null, r: null, s: null, t: null, u: null, v: null, x: null, y: null, z: null};
+		// the rest of this.inventory: , k: null, l: null, m: null, n: null, o: null, p: null, q: null, r: null, s: null, t: null, u: null, v: null, x: null, y: null, z: null
+		this.inventory = {a: null, b: null, c: null, d: null, e: null, f: null, g: null, h: null, i: null, j: null};
 	}
 
 	Character.prototype = new Actor();

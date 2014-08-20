@@ -15,20 +15,23 @@ body {
 
 #main-wrapper{
 	/*margin: 0 auto;*/
-	float: none;
-	display: block;
+	/*float: none;
+	display: block;*/
 }
 
 /*this is not working to center at all.*/
 #game-window {
-	/*float: left;
-	text-align: center;
-	vertical-align: middle;*/
-	width: 100%;
+	float: left;
+	/*text-align: center;*/
+	/*vertical-align: middle;*/
+	/*width: 100%;*/
+	margin-right: 1%;
+
 }
 
 #game-table{
 	margin: auto;
+	float: none;
 }
 
 #HUD {
@@ -41,7 +44,7 @@ body {
 }
 
 #messages {
-	height: 300px;
+	max-height: 225px;
 	background-color: #eee;
 	color: black;
 	overflow-y: scroll;
@@ -62,10 +65,27 @@ td {
 
 #dead {
 	height: 100%;
-	widows: 1000px;
+	width: 1000px;
 	color: red;
 	font-size: 200px;
 	padding-bottom: 100px;
+
+}
+
+#pvp-ai-popup{
+	color: white;
+	height: 50%;
+	width: 50%;
+	background-color: black;
+	font-size: 50px;
+	margin: auto;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	position: absolute;
+	padding: 1%;
+	border-radius: 8px;
 }
 
 .tile {

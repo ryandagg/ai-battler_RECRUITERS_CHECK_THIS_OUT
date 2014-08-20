@@ -1,3 +1,7 @@
+$("#game-window").css({
+	'float': 'none',
+	'margin-top': "1%"
+})
 $("#HUD").hide();
 GameSpace.updateState('aiPvp');
 GameSpace.preInitialize();

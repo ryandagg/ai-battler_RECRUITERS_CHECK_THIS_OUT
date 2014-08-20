@@ -4,7 +4,7 @@ var User = require('../models/user');
 
 var indexController = {
 	index: function(req, res) {
-		res.render('index');
+		res.render('solo');
 	},
 
 	randomBattle: function(req, res) {

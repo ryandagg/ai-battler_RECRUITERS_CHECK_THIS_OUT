@@ -18,17 +18,19 @@ html(lang='en')
 					span.icon-bar
 					span.icon-bar
 					span.icon-bar
-				a.navbar-brand(href="/") AI Battle
+				a.navbar-brand(href="/create-team") Create Team AI
 
 			// Collect the nav links, forms, and other content for toggling
 			.collapse.navbar-collapse.navbar-ex1-collapse
 				ul.nav.navbar-nav
-					li.active
-						a#solo(href="/solo") Play Solo
+					li
+						a(href="/solo") Play Solo
 					li
 						a(href="/random-battle") Random Battle
 					li
 						a(href="#") Forum
+					li
+						//- a(href="#") Forum
 					
 					//- li.dropdown
 					//- 	a.dropdown-toggle(href="#" data-toggle="dropdown") Dropdown 
@@ -51,8 +53,8 @@ html(lang='en')
 				ul.nav.navbar-nav.navbar-right
 					li
 						a(href="/instructions") Instructions
-					li
-						a(href="/create-team") Create Team AI
+					//- li
+					//- 	a(href="/create-team") Create Team AI
 					//- li
 					//- 	span#log-in-link Log In
 						
@@ -70,7 +72,6 @@ html(lang='en')
 					//- 				a(href="#") Separated link
 					//- 			li
 					//- 				a(href="#") One more separated link  
-		#main-display
 	block content
 
 	block scripts

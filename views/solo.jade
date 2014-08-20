@@ -7,34 +7,28 @@ block content
 	//- .container
 	//- 	.row
 			//- #game-space.col-sm-8.col-sm-offset-2
-	div
-		#main-wrapper
-				#game-wrapper
-					#game-window.scale-font
-						//<div class='tile'>something</div> 
-						//jQuery appends here 
-					#HUD
-						#hp
-							//HP updates here 
-							| HP: 100
-						#gold
-							//HP updates here 
-							| gold: 0
-						div
-							br
-							| =======
-							br
-							br
-							| Inventory:
-						#inventory
-							//inventory text goes here 
+	
+	#main-wrapper
+			#game-wrapper
+				#game-window.scale-font
+					//<div class='tile'>something</div> 
+					//jQuery appends here 
+				#HUD
+					#hp
+						//HP updates here 
+						u HP: 50
+					#gold
+						//HP updates here 
+						u gold: 0
+					div
 						br
-						| =======
-						br
-						br
-						| Messages:
-						#messages
-							//messages go here 
+						u Inventory:
+					#inventory
+						//inventory text goes here 
+					br
+					u Messages:
+					#messages
+						//messages go here 
 
 			//- #game-space.center-block
 

@@ -66,7 +66,6 @@ app.post('/auth/signup', authenticationController.processSignup);
 app.get('/auth/logout', authenticationController.logout);
 
 // Non-login route handlers
-app.get('/', indexController.index);
 app.post("/save-team", indexController.saveTeam);
 
 // update db after aipvp match
@@ -75,6 +74,7 @@ app.post('/gameOver', indexController.gameOver);
 // ***** IMPORTANT ***** //
 // By including this middleware (defined in our config/passport.js module.exports), we can prevent unauthorized access to any route handler defined after this call to .use()
 app.use(passportConfig.ensureAuthenticated);
+app.get('/', indexController.index);
 
 // Because this route occurs after the ensureAuthenticated middleware, it will require authentication before access is allowed.
 app.get('/random-battle', indexController.randomBattle);
