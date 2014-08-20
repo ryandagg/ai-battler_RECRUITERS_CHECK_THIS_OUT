@@ -51,7 +51,7 @@ var indexController = {
 		else{
 			req.user.losses +=1;
 			req.user.save();
-			user.findOne({_id: req.body.loser}, function(err, userObj){
+			User.findOne({_id: req.body.loser}, function(err, userObj){
 				if(err){
 					console.log('can not find losser in db to update')
 				}

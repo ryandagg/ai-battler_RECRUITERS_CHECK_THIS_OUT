@@ -58,9 +58,9 @@ var GameSpace = (function() {
 	var tileHeight = null;
 	var daggerHtml = '<img class="dagger" src="assets/dagger1.png">';
 	var healCross = '<img class="heal-cross" src="assets/heal.png">'
-	var animateImageThrust = function(left, top, angle, targetId, image){
+	var animateImageThrust = function(left, top, angle, targetId, image, imgClass){
 		$(targetId).append(image);
-		$(targetId + ' .dagger').css({
+		$(targetId + ' .' + imgClass).css({
 			'top': 0,
 			'left': 0,
 			'width': tileWidth*1.5,
@@ -71,7 +71,7 @@ var GameSpace = (function() {
 			// 'transform-origin': '0% 25%',
 		})
 		animation = TweenLite.to(
-			$(targetId + ' .dagger'), 
+			$(targetId + ' .' + imgClass), 
 			TIMER_INTERVAL*2/1000, 
 			{css:{
 				'left': left, 
@@ -81,7 +81,7 @@ var GameSpace = (function() {
 		var daggerTimeline = new TimelineLite();
 		daggerTimeline.add(animation);
 		daggerTimeline.play();
-		setTimeout(function(){$(targetId + ' .dagger').remove()}, TIMER_INTERVAL*2 - 10)
+		setTimeout(function(){$(targetId + ' .' + imgClass).remove()}, TIMER_INTERVAL*2 - 10)
 
 	}
 
@@ -93,6 +93,11 @@ var GameSpace = (function() {
 		if(horz === 0 && vert === -1){
 			degrees = '0deg';
 			top = -tileHeight*0.8;
+			left = 0;
+		}
+		else if(horz === 0 && vert === 0){
+			degrees = '0deg';
+			top = 0;
 			left = 0;
 		}
 		else if(horz === 1 && vert === -1){
@@ -288,7 +293,7 @@ var GameSpace = (function() {
 			$.post('/gameOver', {winner: 'currentUser', loser: OPPONENT_ID})
 		}
 		var currentTurn = pvpTurnOrder[totalTurns % (team1.turnOrder.length + team2.turnOrder.length)];
-		console.log("currentTurn:", currentTurn)
+		// console.log("currentTurn:", currentTurn)
 		if(currentTurn[1] === 'team1'){
 			if(currentTurn[0] === 'rogue' && team1.rogue.health > 0){
 				team1.turnRogue(currentLevel, team1.rogue);
@@ -311,7 +316,7 @@ var GameSpace = (function() {
 				team2.turnWarrior(currentLevel, team2.warrior);
 			}
 		}
-		console.log("totalTurns:", totalTurns)
+		// console.log("totalTurns:", totalTurns)
 		totalTurns++;
 	}
 
@@ -1232,7 +1237,7 @@ var GameSpace = (function() {
 			this.combatHandler(currentLevel.map[this.y + vert][this.x + horz]);
 			var targetId = pos([this.x, this.y]);
 			var angleDirection = getAngleDirection(horz, vert);
-			animateImageThrust(angleDirection[1], angleDirection[2], angleDirection[0], targetId, daggerHtml)
+			animateImageThrust(angleDirection[1], angleDirection[2], angleDirection[0], targetId, daggerHtml, 'dagger')
 			
 			turnHandler();
 		}
@@ -1240,7 +1245,7 @@ var GameSpace = (function() {
 			this.combatHandler(currentLevel.map[this.y + vert][this.x + horz]);	
 			var targetId = pos([this.x, this.y]);
 			var angleDirection = getAngleDirection(horz, vert);
-			animateImageThrust(angleDirection[1], angleDirection[2], angleDirection[0], targetId, daggerHtml)	
+			animateImageThrust(angleDirection[1], angleDirection[2], angleDirection[0], targetId, daggerHtml, 'dagger')	
 		}
 		else if(nextTile instanceof Door) {
 			currentLevel.emptyTile(this.x + horz, this.y + vert);
@@ -1430,8 +1435,8 @@ var GameSpace = (function() {
 
 	Character.prototype.nextTo = function(squad, characterClass){
 		var targetObj = this.findCharacter(squad, characterClass);
-		if(Math.abs(targetObj.x - this.x) <= 1 && Math.abs(targetObj.y - this.y) <= 1){
-			console.log("[targetObj.x - this.x, targetObj.y - this.y]:", [targetObj.x - this.x, targetObj.y - this.y])
+		if(targetObj && Math.abs(targetObj.x - this.x) <= 1 && Math.abs(targetObj.y - this.y) <= 1){
+			// console.log("[targetObj.x - this.x, targetObj.y - this.y]:", [targetObj.x - this.x, targetObj.y - this.y])
 			return [targetObj.x - this.x, targetObj.y - this.y]
 		}
 		return false
@@ -1439,10 +1444,11 @@ var GameSpace = (function() {
 
 	Character.prototype.checkHealthPercent = function(squad, characterClass){
 		var targetObj = this.findCharacter(squad, characterClass);
-		// var targetObj = currentLevel.map[target[1]][target[0]];
+		// console.log("targetObj from checkHealthPercent:", targetObj);
 		if(!targetObj){
 			return false;
 		}
+		// console.log("targetObj.health / targetObj.maxHealth:", targetObj.health / targetObj.maxHealth);
 		return targetObj.health / targetObj.maxHealth;
 	}
 
@@ -1458,13 +1464,13 @@ var GameSpace = (function() {
 		var targetObj = this.findCharacter(squad, characterClass);
 		// var targetObj = currentLevel.map[target[1]][target[0]];
 		// console.log("target:;", target, currentLevel.map[target[1]][target[0]]);
-		var path = this.getPath(targetObj);
-		// var tempMatrix = currentLevel.createPFMatrix(currentLevel.map, this, targetObj);
 
-		// var grid = new PF.Grid(currentLevel.columns, currentLevel.rows, tempMatrix);
+		if(targetObj){
+			var path = this.getPath(targetObj);
+			// console.log("targetObj from moveTo:", targetObj)
+		}
 
-		// var path = pathFinder.findPath(this.x, this.y, targetObj.x, targetObj.y, grid);
-		console.log("path:", path);
+		// console.log("path:", path);
 		if(path.length === 0){
 			var isNextTo = this.nextTo(squad, characterClass)
 		 	if(isNextTo) {
@@ -1480,12 +1486,14 @@ var GameSpace = (function() {
 
 	// Used by priests to heal characters.
 	Character.prototype.heal = function(coordinates){
+		// console.log('****HEAL CALLED!!!')
 		for(var key in this.inventory){
 			if(this.inventory[key] instanceof HealingStaff){
-				this.inventory[key].use(coordinates[0], coordinates[1])
+				// console.log("this.inventory[key].use:", this.inventory[key].useStaff);
+				this.inventory[key].useStaff(coordinates[0], coordinates[1], this)
 				var targetId = pos([this.x, this.y]);
 				var angleDirection = getAngleDirection(coordinates[0], coordinates[1]);
-				animateImageThrust(angleDirection[1], angleDirection[2], 'deg0', targetId, healCross);
+				animateImageThrust(angleDirection[1], angleDirection[2], 'deg0', targetId, healCross, 'heal-cross');
 			}
 		}
 	}
@@ -1525,7 +1533,6 @@ var GameSpace = (function() {
 		// inventory
 		this.inventory.a = new Dagger(x, y, false);
 		this.inventory.b = new LeatherArmor(x, y, false);
-		this.inventory.c = new HealingStaff(x, y);
 	}
 
 	Rogue.prototype = new Character();
@@ -1577,6 +1584,8 @@ var GameSpace = (function() {
 		// inventory
 		this.inventory.a = new Dagger(x, y, false);
 		this.inventory.b = new ChainMail(x, y, false);
+		this.inventory.c = new HealingStaff(x, y);
+
 	}
 
 	Priest.prototype = new Character();
@@ -1810,15 +1819,19 @@ var GameSpace = (function() {
 	    return this.label + ", " + this.charges + " charges";
 	}
 
-	Staff.prototype.useStaff = function(horz, vert){
+	Staff.prototype.useStaff = function(horz, vert, user){
 		if(Math.abs(horz) > this.range || Math.abs(horz) > this.range){
-			addMessage("Target is out of range.")
+			addMessage("Target is out of range.");
+			console.log("Target is out of range.");
 		}
 		else if(this.charges < 1){
-			addMessage("The staff is out of charges.")
+			addMessage("The staff is out of charges.");
+			console.log("The staff is out of charges.");
 		}
 		else{
-			this.effect(target);
+			var targetObj = currentLevel.map[user.y + vert][user.x + horz];
+			console.log("targetObj from useStaff:", targetObj);
+			this.effect(targetObj);
 			this.charges -= 1;
 		}
 	}
@@ -1826,8 +1839,12 @@ var GameSpace = (function() {
 	var HealingStaff = function(x, y){
 		Staff.call(this, x, y);
 		this.range = 1;
-		this.effect = function(horz, vert){
-			target.health *= 1.333
+
+		this.effect = function(targetObj){
+			console.log("targetObj before heal:", targetObj.health);
+			// targetObj.health += (targetObj.maxHealth*0.333);
+			targetObj.health += 17;
+			console.log("targetObj after heal:", targetObj.health);
 		}
 		this.label = 'Staff of Healing'
 	}
@@ -1835,9 +1852,7 @@ var GameSpace = (function() {
 	HealingStaff.prototype = new Staff();
 	HealingStaff.prototype.constructor = HealingStaff;
 
-	HealingStaff.prototype.use = function(target){
-
-	}
+	
 
 // everything else
 	// // create local 'globals'

@@ -30,12 +30,15 @@ Team.prototype.turnRogue = function(map, rogue) {
 };
 
 Team.prototype.turnPriest = function(map, priest) {
-	if(priest.checkHealthPercent('mine', 'priest') < 0.7){
+	if(priest.checkHealthPercent('mine', 'priest') < 0.66){
 		priest.heal([0, 0]);
 	}
-	else if(priest.checkHealthPercent('mine','warrior') < 0.7){
-		var isNextTo = priest.nextTo('mine', 'warrior')
+	else if(priest.checkHealthPercent('mine','warrior') < 0.66){
+		// console.log("priest.checkHealthPercent('mine','warrior'):", priest.checkHealthPercent('mine','warrior'))
+		var isNextTo = priest.nextTo('mine', 'warrior');
+		// console.log("isNextTo:", isNextTo);
 		if(!isNextTo){
+			// console.log("priest.moveTo('mine', 'warrior')")
     		priest.moveTo('mine', 'warrior');
 		}
 		else{
@@ -44,12 +47,15 @@ Team.prototype.turnPriest = function(map, priest) {
 	}
 	else{
 		if(priest.checkHealthPercent('enemy', 'priest')){
+			// console.log("priest.moveTo('enemy', 'priest')")
     		priest.moveTo('enemy', 'priest');
 	    }
 	    else if(priest.checkHealthPercent('enemy', 'warrior')){
+			// console.log("priest.moveTo('enemy', 'warrior')")
 	    	priest.moveTo('enemy', 'warrior');
 	    }
 	    else if(priest.checkHealthPercent('enemy', 'rogue')){
+			// console.log("priest.moveTo('enemy', 'rogue')")
 	    	priest.moveTo('enemy', 'rogue');
 	    }
 	}
