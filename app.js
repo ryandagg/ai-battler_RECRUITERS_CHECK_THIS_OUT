@@ -61,6 +61,9 @@ app.get('/auth/logout', authenticationController.logout);
 app.get('/', indexController.index);
 app.post("/save-team", indexController.saveTeam);
 
+// update db after aipvp match
+app.post('/gameOver', indexController.gameOver);
+
 // ***** IMPORTANT ***** //
 // By including this middleware (defined in our config/passport.js module.exports), we can prevent unauthorized access to any route handler defined after this call to .use()
 app.use(passportConfig.ensureAuthenticated);

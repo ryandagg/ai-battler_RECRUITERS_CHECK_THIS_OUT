@@ -19,13 +19,32 @@ Team.prototype.turnRogue = function(map, rogue) {
 	// You can only move a character by 1 square at a time. If you put in a number out side of [-1, 1] it will still only move 1 square. It only accepts integers. "Moving" on to an enemy atacks them. Same with your own team...
 
 	// Move the character to the right by 1 square.
-    rogue.move(1, 0);
+    var coords = rogue.checkForAdjacentEnemy()
+	if(coords){
+		rogue.move(coords[0], coords[1]);
+	}
+	else{
+    	rogue.move(1, 0);
+    }
 };
 
 Team.prototype.turnPriest = function(map, priest) {
-    priest.move(1, 0);
+    var coords = priest.checkForAdjacentEnemy()
+	if(coords){
+		priest.move(coords[0], coords[1]);
+	}
+	else{
+    	priest.move(1, 0);
+    }
 };
 
 Team.prototype.turnWarrior = function(map, warrior) {
-    warrior.move(1, 0);
+	// Return coordinates of adjacent enemy or false if there are none adjacent.
+	var coords = warrior.checkForAdjacentEnemy()
+	if(coords){
+		warrior.move(coords[0], coords[1]);
+	}
+	else{
+    	warrior.move(1, 0);
+    }
 };

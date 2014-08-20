@@ -97,7 +97,9 @@ var authenticationController = {
       username: req.param('username'),
       password: req.param('password'),
       email: req.param('email'),
-      team: file
+      team: file,
+      wins: 0,
+      losses: 0
     
     })
 

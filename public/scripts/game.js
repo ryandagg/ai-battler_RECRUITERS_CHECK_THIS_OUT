@@ -57,8 +57,9 @@ var GameSpace = (function() {
 	var tileWidth = null;
 	var tileHeight = null;
 	var daggerHtml = '<img class="dagger" src="assets/dagger1.png">';
-	var animateDaggerThrust = function(left, top, angle, targetId){
-		$(targetId).append(daggerHtml);
+	var healCross = '<img class="heal-cross" src="assets/heal.png">'
+	var animateImageThrust = function(left, top, angle, targetId, image){
+		$(targetId).append(image);
 		$(targetId + ' .dagger').css({
 			'top': 0,
 			'left': 0,
@@ -135,7 +136,7 @@ var GameSpace = (function() {
 	}
 
 	// var daggerTimeline = new TimelineLight({paused: true});
-	// daggerTimeline.add(animateDaggerThrust())
+	// daggerTimeline.add(animateImageThrust())
 	// daggerTimeline.play();
 
 	// utility functions for resizing tiles upon window load & resize
@@ -274,6 +275,18 @@ var GameSpace = (function() {
 
 	// Handles turns for AI characters.
 	var aiPvpTurnHandler = function() {
+		if(team1.checkDead()){
+			// end game
+			clearInterval(timer);
+			console.log('team2 wins!')
+			$.post('/gameOver', {winner: OPPONENT_ID, loser: 'currentUser'})
+		}
+		if(team2.checkDead()){
+			// end game
+			clearInterval(timer);
+			console.log('team1 wins!')
+			$.post('/gameOver', {winner: 'currentUser', loser: OPPONENT_ID})
+		}
 		var currentTurn = pvpTurnOrder[totalTurns % (team1.turnOrder.length + team2.turnOrder.length)];
 		console.log("currentTurn:", currentTurn)
 		if(currentTurn[1] === 'team1'){
@@ -312,9 +325,10 @@ var GameSpace = (function() {
 		}
 	}
 
+	var timer = null;
 	var startTimer = function() {
 		console.log("timer started:");
-		var timer = setInterval(aiPvpTurnHandler, TIMER_INTERVAL);
+		timer = setInterval(aiPvpTurnHandler, TIMER_INTERVAL);
 	}
 
 	// called for each monster after the rogue's turn.
@@ -1192,76 +1206,6 @@ var GameSpace = (function() {
 			// }
 		}
 	}
-	Character.prototype.move = function(horz, vert){
-		this.directionalMovementHandler(horz, vert);
-	}
-
-	Character.prototype.findCharacter = function(squad, characterClass){
-		var classKey = {priest: Priest, warrior: Warrior, rogue: Rogue}
-		var targetTeam = 'team1';
-		if ((this.team === 'team1' && squad === 'enemy') || this.team === 'team2' && squad === 'mine'){
-			targetTeam = 'team2';
-		}
-		
-		for(var y = 0; y < currentLevel.rows; y++){
-			for(var x = 0; x < currentLevel.columns; x++){
-				// console.log("x, y:", x, y)
-				if(currentLevel.map[y][x].team === targetTeam & currentLevel.map[y][x] instanceof classKey[characterClass]){
-					return currentLevel.map[y][x]
-				}
-			}
-		}
-	}
-
-	Character.prototype.nextTo = function(squad, characterClass){
-		var targetObj = this.findCharacter(squad, characterClass);
-		if(Math.abs(targetObj.x - this.x) <= 1 && Math.abs(targetObj.y - this.y) <= 1){
-			console.log("[targetObj.x - this.x, targetObj.y - this.y]:", [targetObj.x - this.x, targetObj.y - this.y])
-			return [targetObj.x - this.x, targetObj.y - this.y]
-		}
-		return false
-	}
-
-	Character.prototype.checkHealthPercent = function(squad, characterClass){
-		var targetObj = this.findCharacter(squad, characterClass);
-		// var targetObj = currentLevel.map[target[1]][target[0]];
-		if(!targetObj){
-			return false;
-		}
-		return targetObj.health / targetObj.maxHealth;
-	}
-
-	Character.prototype.getPath = function(targetObj){
-		var tempMatrix = currentLevel.createPFMatrix(currentLevel.map, this, targetObj);
-
-		var grid = new PF.Grid(currentLevel.columns, currentLevel.rows, tempMatrix);
-
-		return pathFinder.findPath(this.x, this.y, targetObj.x, targetObj.y, grid);
-	}
-
-	Character.prototype.moveTo = function(squad, characterClass){
-		var targetObj = this.findCharacter(squad, characterClass);
-		// var targetObj = currentLevel.map[target[1]][target[0]];
-		// console.log("target:;", target, currentLevel.map[target[1]][target[0]]);
-		var path = this.getPath(targetObj);
-		// var tempMatrix = currentLevel.createPFMatrix(currentLevel.map, this, targetObj);
-
-		// var grid = new PF.Grid(currentLevel.columns, currentLevel.rows, tempMatrix);
-
-		// var path = pathFinder.findPath(this.x, this.y, targetObj.x, targetObj.y, grid);
-		console.log("path:", path);
-		if(path.length === 0){
-			var isNextTo = this.nextTo(squad, characterClass)
-		 	if(isNextTo) {
-				this.directionalMovementHandler(isNextTo[0], isNextTo[1]);
-			}
-		}
-		else{
-			var horz = path[1][0] - this.x;
-			var vert = path[1][1] - this.y;
-			this.directionalMovementHandler(horz, vert);
-		}
-	}
 
 
 	Character.prototype.directionalMovementHandler = function(horz, vert) {
@@ -1288,7 +1232,7 @@ var GameSpace = (function() {
 			this.combatHandler(currentLevel.map[this.y + vert][this.x + horz]);
 			var targetId = pos([this.x, this.y]);
 			var angleDirection = getAngleDirection(horz, vert);
-			animateDaggerThrust(angleDirection[1], angleDirection[2], angleDirection[0], targetId)
+			animateImageThrust(angleDirection[1], angleDirection[2], angleDirection[0], targetId, daggerHtml)
 			
 			turnHandler();
 		}
@@ -1296,7 +1240,7 @@ var GameSpace = (function() {
 			this.combatHandler(currentLevel.map[this.y + vert][this.x + horz]);	
 			var targetId = pos([this.x, this.y]);
 			var angleDirection = getAngleDirection(horz, vert);
-			animateDaggerThrust(angleDirection[1], angleDirection[2], angleDirection[0], targetId)	
+			animateImageThrust(angleDirection[1], angleDirection[2], angleDirection[0], targetId, daggerHtml)	
 		}
 		else if(nextTile instanceof Door) {
 			currentLevel.emptyTile(this.x + horz, this.y + vert);
@@ -1460,6 +1404,105 @@ var GameSpace = (function() {
 		// uncomment this to throw the "call initialize on ready twice bug"
 		// $("#inventory").append("blah" + ": " + this.inventory[blah] + "<br>");
 	}
+
+
+// Functions only used in aiPvp.
+	Character.prototype.move = function(horz, vert){
+		this.directionalMovementHandler(horz, vert);
+	}
+
+	Character.prototype.findCharacter = function(squad, characterClass){
+		var classKey = {priest: Priest, warrior: Warrior, rogue: Rogue}
+		var targetTeam = 'team1';
+		if ((this.team === 'team1' && squad === 'enemy') || this.team === 'team2' && squad === 'mine'){
+			targetTeam = 'team2';
+		}
+		
+		for(var y = 0; y < currentLevel.rows; y++){
+			for(var x = 0; x < currentLevel.columns; x++){
+				// console.log("x, y:", x, y)
+				if(currentLevel.map[y][x].team === targetTeam & currentLevel.map[y][x] instanceof classKey[characterClass]){
+					return currentLevel.map[y][x]
+				}
+			}
+		}
+	}
+
+	Character.prototype.nextTo = function(squad, characterClass){
+		var targetObj = this.findCharacter(squad, characterClass);
+		if(Math.abs(targetObj.x - this.x) <= 1 && Math.abs(targetObj.y - this.y) <= 1){
+			console.log("[targetObj.x - this.x, targetObj.y - this.y]:", [targetObj.x - this.x, targetObj.y - this.y])
+			return [targetObj.x - this.x, targetObj.y - this.y]
+		}
+		return false
+	}
+
+	Character.prototype.checkHealthPercent = function(squad, characterClass){
+		var targetObj = this.findCharacter(squad, characterClass);
+		// var targetObj = currentLevel.map[target[1]][target[0]];
+		if(!targetObj){
+			return false;
+		}
+		return targetObj.health / targetObj.maxHealth;
+	}
+
+	Character.prototype.getPath = function(targetObj){
+		var tempMatrix = currentLevel.createPFMatrix(currentLevel.map, this, targetObj);
+
+		var grid = new PF.Grid(currentLevel.columns, currentLevel.rows, tempMatrix);
+
+		return pathFinder.findPath(this.x, this.y, targetObj.x, targetObj.y, grid);
+	}
+
+	Character.prototype.moveTo = function(squad, characterClass){
+		var targetObj = this.findCharacter(squad, characterClass);
+		// var targetObj = currentLevel.map[target[1]][target[0]];
+		// console.log("target:;", target, currentLevel.map[target[1]][target[0]]);
+		var path = this.getPath(targetObj);
+		// var tempMatrix = currentLevel.createPFMatrix(currentLevel.map, this, targetObj);
+
+		// var grid = new PF.Grid(currentLevel.columns, currentLevel.rows, tempMatrix);
+
+		// var path = pathFinder.findPath(this.x, this.y, targetObj.x, targetObj.y, grid);
+		console.log("path:", path);
+		if(path.length === 0){
+			var isNextTo = this.nextTo(squad, characterClass)
+		 	if(isNextTo) {
+				this.directionalMovementHandler(isNextTo[0], isNextTo[1]);
+			}
+		}
+		else{
+			var horz = path[1][0] - this.x;
+			var vert = path[1][1] - this.y;
+			this.directionalMovementHandler(horz, vert);
+		}
+	}
+
+	// Used by priests to heal characters.
+	Character.prototype.heal = function(coordinates){
+		for(var key in this.inventory){
+			if(this.inventory[key] instanceof HealingStaff){
+				this.inventory[key].use(coordinates[0], coordinates[1])
+				var targetId = pos([this.x, this.y]);
+				var angleDirection = getAngleDirection(coordinates[0], coordinates[1]);
+				animateImageThrust(angleDirection[1], angleDirection[2], 'deg0', targetId, healCross);
+			}
+		}
+	}
+
+	Character.prototype.checkForAdjacentEnemy = function(){
+		for(var y = this.y - 1; y <= this.y + 1; y++){
+			for(var x = this.x - 1; x <= this.x + 1; x++){
+				if(currentLevel.map[y][x].team && currentLevel.map[y][x].team !== this.team){
+					var horz = currentLevel.map[y][x].x - this.x
+					var vert = currentLevel.map[y][x].y - this.y
+					return [horz, vert];
+				}
+			}
+		}
+		return false;
+	}
+
 // Specific character 'classes.' Really just characters with different starting equipment.
 	var Rogue = function(x, y) {
 		// Tile.call(this, x, y);
@@ -1544,6 +1587,15 @@ var GameSpace = (function() {
 		this.warrior = new Warrior(centerX, centerY);
 		this.priest = new Priest(centerX, centerY + 1);
 		this.rogue = new Rogue(centerX, centerY - 1);
+	}
+
+	Squad.prototype.checkDead = function(){
+		for(var key in this){
+			if(this[key].x && this[key].health > 0){
+				return false;
+			}
+		}
+		return true;
 	}
 
 // monster related code

@@ -23,7 +23,9 @@ var userSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  team: String
+  team: String,
+  wins: Number,
+  losses: Number
 });
 
 /**
