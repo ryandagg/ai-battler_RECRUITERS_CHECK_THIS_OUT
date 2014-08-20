@@ -44,7 +44,7 @@ body {
 }
 
 #messages {
-	max-height: 275px;
+	max-height: 375px;
 	background-color: #eee;
 	color: black;
 	overflow-y: scroll;
