@@ -260,7 +260,7 @@ var GameSpace = (function() {
 		// character regen
 		rogue.regen();
 		// update HP display in HUD after regen
-		$("#hp").html("<u>HP</>: " + Math.floor(rogue.health));
+		$("#hp").html("<u>HP</u>: " + Math.floor(rogue.health));
 
 		// rogue.drawInventory(); // this does not appear to be needed here.
 		totalTurns++;
@@ -1333,7 +1333,7 @@ var GameSpace = (function() {
 			this.gold += currentLevel.map[this.y + vert][this.x + horz].quantity;
 			currentLevel.map[this.y + vert][this.x + horz] = new Tile(this.x + horz, this.y + vert);
 			currentLevel.updateActor(horz, vert, this);
-			$("#gold").text("Gold: " + this.gold);
+			$("#gold").html("<u>Gold:</u> " + this.gold);
 			turnHandler();
 		}
 		else if(nextTile instanceof Item) {
