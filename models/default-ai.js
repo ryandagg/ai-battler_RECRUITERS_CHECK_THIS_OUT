@@ -26,6 +26,13 @@ Team.prototype.turnRogue = function(map, rogue) {
 	else{
     	rogue.move(1, 0);
     }
+    coords = rogue.checkForAdjacentEnemy()
+	if(coords){
+		rogue.move(coords[0], coords[1]);
+	}
+	else{
+    	rogue.move(1, 0);
+    }
 };
 
 Team.prototype.turnPriest = function(map, priest) {

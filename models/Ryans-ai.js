@@ -27,6 +27,15 @@ Team.prototype.turnRogue = function(map, rogue) {
     else if(rogue.checkHealthPercent('enemy', 'rogue')){
     	rogue.moveTo('enemy', 'rogue');
     }
+     if(rogue.checkHealthPercent('enemy', 'priest')){
+    	rogue.moveTo('enemy', 'priest');
+    }
+    else if(rogue.checkHealthPercent('enemy', 'warrior')){
+    	rogue.moveTo('enemy', 'warrior');
+    }
+    else if(rogue.checkHealthPercent('enemy', 'rogue')){
+    	rogue.moveTo('enemy', 'rogue');
+    }
 };
 
 Team.prototype.turnPriest = function(map, priest) {

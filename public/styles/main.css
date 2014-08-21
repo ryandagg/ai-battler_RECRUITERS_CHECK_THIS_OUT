@@ -73,6 +73,7 @@ td {
 }
 
 #pvp-ai-popup{
+	background: url('../assets/bg-grill-dark.png') repeat;
 	color: white;
 	height: 50%;
 	width: 50%;
@@ -86,6 +87,8 @@ td {
 	position: absolute;
 	padding: 1%;
 	border-radius: 8px;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+
 }
 
 .tile {

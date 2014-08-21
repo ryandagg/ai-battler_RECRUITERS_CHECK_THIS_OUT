@@ -306,7 +306,7 @@ var GameSpace = (function() {
 			$.post('/gameOver', {winner: 'currentUser', loser: OPPONENT_ID})
 			$('#game-window').append(
 				"<div id='pvp-ai-popup'>" +
-					"You have won! Click 'Random Battle' in the nav bar to play again." +
+					"You have won! Refresh to play again." +
 				"</div>")
 		}
 		var currentTurn = pvpTurnOrder[totalTurns % (team1.turnOrder.length + team2.turnOrder.length)];
@@ -1278,7 +1278,7 @@ var GameSpace = (function() {
 		}
 	}
 
-
+	var audioFlag = true;
 	Character.prototype.directionalMovementHandler = function(horz, vert) {
 		// console.log("horz: ", horz, " vert: ", vert);
 		var nextTile = currentLevel.map[this.y + vert][this.x + horz];
@@ -1311,7 +1311,12 @@ var GameSpace = (function() {
 			this.combatHandler(currentLevel.map[this.y + vert][this.x + horz]);	
 			var targetId = pos([this.x, this.y]);
 			var angleDirection = getAngleDirection(horz, vert);
-			animateImageThrust(angleDirection[1], angleDirection[2], angleDirection[0], targetId, daggerHtml, 'dagger')	
+			animateImageThrust(angleDirection[1], angleDirection[2], angleDirection[0], targetId, daggerHtml, 'dagger')
+			// plays 'everybody is kungfu fighting' on first hit in pvp.
+			if(audioFlag){
+				$('#kung-fu-audio').trigger('play');
+			}
+			audioFlag = false;
 		}
 		else if(nextTile instanceof Door) {
 			currentLevel.emptyTile(this.x + horz, this.y + vert);
